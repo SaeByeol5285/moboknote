@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import FeedList from "../pages/FeedList";
+import FeedWrite from "../pages/FeedWrite";
 import MyPage from "../pages/MyPage";
 import MainLayout from "../layouts/MainLayout";
 
@@ -30,6 +31,14 @@ function AppRouter() {
                 }
             />
             <Route
+                path="/feedWrite"
+                element={
+                    // <MainLayout>
+                        <FeedWrite />
+                    // </MainLayout>
+                }
+            />
+            <Route
                 path="/mypage"
                 element={
                     <MainLayout>
@@ -37,7 +46,6 @@ function AppRouter() {
                     </MainLayout>
                 }
             />
-            {/* 필요한 만큼 계속 추가 */}
         </Routes>
     );
 }

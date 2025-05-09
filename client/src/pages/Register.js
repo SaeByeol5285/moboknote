@@ -84,6 +84,7 @@ function Register() {
             return;
         }
 
+
         // 5. 유효성 통과 후 서버로 전송
         fetch("http://localhost:3005/user/register", {
             method: "POST",
@@ -226,7 +227,7 @@ function Register() {
                     >
                         중복확인
                     </Button>
-                    
+
                     <TextField
                         inputRef={pwdRef}
                         fullWidth
