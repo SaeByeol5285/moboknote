@@ -2,42 +2,42 @@ import React from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
-import FeedList from "../pages/FeedList";
 import FeedWrite from "../pages/FeedWrite";
 import MyPage from "../pages/MyPage";
+import Home from "../pages/Home";
 import MainLayout from "../layouts/MainLayout";
+import FeedDetail from "../pages/FeedDetail";
 
 function AppRouter() {
     const location = useLocation();
-
-    const isAuthPage =
-        location.pathname === "/login" || location.pathname === "/register";
+    const state = location.state;
+    const isAuthPage = location.pathname === "/login" || location.pathname === "/register";
 
     return (
         <Routes>
-            {/* ✅ 루트 경로에 접근하면 로그인으로 리다이렉트 */}
             <Route path="/" element={<Navigate to="/login" replace />} />
-            {/* 레이아웃 없이 보여줄 페이지 */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
-            {/* MainLayout이 감싸는 페이지 */}
+            {/* 로그인 후 접근 가능한 메인 홈 페이지 */}
             <Route
-                path="/"
+                path="/home"
                 element={
                     <MainLayout>
-                        <FeedList />
+                        <Home />
                     </MainLayout>
                 }
             />
+
             <Route
                 path="/feedWrite"
                 element={
-                    // <MainLayout>
+                    <MainLayout>
                         <FeedWrite />
-                    // </MainLayout>
+                    </MainLayout>
                 }
             />
+
             <Route
                 path="/mypage"
                 element={
@@ -46,6 +46,18 @@ function AppRouter() {
                     </MainLayout>
                 }
             />
+
+            {/* ✅ 모달은 backgroundLocation 있을 때만 */}
+            {state?.backgroundLocation && (
+
+                <Route path="/feed/:no" element={
+                    <MainLayout>
+                        <FeedDetail />
+                    </MainLayout>
+
+                } />
+
+            )}
         </Routes>
     );
 }

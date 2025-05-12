@@ -42,7 +42,7 @@ function Login() {
                         nickname: decoded.nickname,
                         profile_img: decoded.profile_img,
                     });
-                    navigate("/feedWrite");
+                    navigate("/home");
                 }
             })
     };

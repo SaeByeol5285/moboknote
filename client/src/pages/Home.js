@@ -1,11 +1,13 @@
-function Home(){
+import React from "react";
+import HeaderFilter from "../components/HeaderFilter";
+import FeedList from "./FeedList";
 
-    return(
-        <>
-        
-        
-        </>
-    )
+function Home() {
+  return (
+    <>
+      <FeedList />
+    </>
+  );
 }
 
-export default Home
+export default Home;
