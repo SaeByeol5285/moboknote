@@ -73,7 +73,7 @@ function KakaoMap({ searchPlaces, selectedPlaceType, onSelectPlace }) {
         const coordsArray = [];
         let resolved = 0;
 
-        searchPlaces.forEach((keyword, idx) => {
+        searchPlaces.forEach(({ type, keyword }, idx) => {
             if (!keyword || typeof keyword !== "string" || keyword.trim() === "") {
                 resolved++;
                 return;
@@ -91,34 +91,29 @@ function KakaoMap({ searchPlaces, selectedPlaceType, onSelectPlace }) {
                     });
                     markersRef.current.push(marker);
 
-                    const type = selectedPlaceTypeRef.current;
+                    // ✅ 정확한 type 전달
                     onSelectPlace?.(type, {
                         name: place.place_name,
                         lat: parseFloat(place.y),
                         lng: parseFloat(place.x),
                     });
+
                 } else {
                     const geocoder = new window.kakao.maps.services.Geocoder();
                     geocoder.addressSearch(keyword, (result, addrStatus) => {
-                        console.log("📍 keyword:", keyword);
-                        console.log("📦 result:", result);
-                        console.log("📋 addrStatus:", addrStatus);
-                    
                         if (addrStatus === window.kakao.maps.services.Status.OK && result.length > 0) {
-                            console.log("✅ 주소 변환 성공", result[0]);
-                    
                             const pos = new window.kakao.maps.LatLng(result[0].y, result[0].x);
                             coordsArray[idx] = pos;
-                    
+
                             const marker = new window.kakao.maps.Marker({
                                 map: mapRef.current,
                                 position: pos,
                             });
                             markersRef.current.push(marker);
-                    
-                            const type = selectedPlaceTypeRef.current;
+
                             const address = result[0].address?.address_name || result[0].road_address?.address_name || keyword;
-                    
+
+                            // ✅ 정확한 type 전달
                             onSelectPlace?.(type, {
                                 name: address,
                                 lat: parseFloat(result[0].y),
@@ -127,7 +122,7 @@ function KakaoMap({ searchPlaces, selectedPlaceType, onSelectPlace }) {
                         } else {
                             console.warn("❌ 주소 검색 실패:", keyword, addrStatus);
                         }
-                    
+
                         resolved++;
                         if (resolved === searchPlaces.length) {
                             drawPolyline(coordsArray);
@@ -147,6 +142,8 @@ function KakaoMap({ searchPlaces, selectedPlaceType, onSelectPlace }) {
             const validCoords = coordsArray.filter(Boolean);
             if (validCoords.length > 0) {
                 mapRef.current.setCenter(validCoords[0]);
+
+                // 1. 폴리라인 생성
                 if (validCoords.length >= 2) {
                     const polyline = new window.kakao.maps.Polyline({
                         path: validCoords,
@@ -158,7 +155,62 @@ function KakaoMap({ searchPlaces, selectedPlaceType, onSelectPlace }) {
                     polyline.setMap(mapRef.current);
                     polylineRef.current = polyline;
                 }
+
+                // 2. 마커마다 출발/번호/도착 표시 추가
+                drawMarkersWithLabels(validCoords);
+                fitMapToBounds(validCoords); // ✅ 줌 자동 조정 추가
+
             }
+        }
+        // ✅ 마커 위에 라벨 오버레이 추가 함수
+        function drawMarkersWithLabels(coords) {
+            coords.forEach((pos, idx) => {
+                let label = "";
+                if (idx === 0) label = "출발";
+                else if (idx === coords.length - 1) label = "도착";
+                else label = `${idx}`;
+
+                // 커스텀 오버레이 HTML
+                const content = `
+                    <div style="
+                        background: #C0392B;
+                        color: white;
+                        padding: 4px 8px;
+                        border-radius: 12px;
+                        font-size: 12px;
+                        text-align: center;
+                        transform: translate(-50%, -100%);
+                        white-space: nowrap;
+                        box-shadow: 1px 1px 4px rgba(0,0,0,0.3);
+                    ">
+                        ${label}
+                    </div>
+                    `;
+
+                // 오버레이 생성
+                new window.kakao.maps.CustomOverlay({
+                    map: mapRef.current,
+                    position: pos,
+                    content,
+                    yAnchor: 1,
+                });
+
+                // 선택적으로 마커도 함께 생성 (작은 점처럼)
+                const marker = new window.kakao.maps.Marker({
+                    map: mapRef.current,
+                    position: pos,
+                    title: label, // ✅ 마우스 오버 시 보여줄 텍스트
+                });
+                window.kakao.maps.event.addListener(marker, "click", () => {
+                    alert(`${label} 지점 클릭됨`);
+                });
+                markersRef.current.push(marker);
+            });
+        }
+        function fitMapToBounds(coords) {
+            const bounds = new window.kakao.maps.LatLngBounds();
+            coords.forEach((pos) => bounds.extend(pos));
+            mapRef.current.setBounds(bounds);
         }
     }, [searchPlaces]);
 

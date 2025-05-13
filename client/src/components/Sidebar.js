@@ -5,14 +5,17 @@ import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import NotificationsNoneRoundedIcon from "@mui/icons-material/NotificationsNoneRounded";
 import AddBoxRoundedIcon from "@mui/icons-material/AddBoxRounded";
 import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
+import { useNavigate } from "react-router-dom";
 
 
 function Sidebar() {
+    const navigate = useNavigate(); // ✅ useNavigate 훅 사용
+
     return (
         <Box
             sx={{
                 height: "100%",
-                backgroundColor: "#fff",
+                backgroundColor: "#FDFBF5",
                 padding: "30px 20px",
                 borderRight: "1px solid #ddd",
                 position: "sticky",  // 고정 옵션
@@ -29,7 +32,7 @@ function Sidebar() {
 
             {/* 메뉴 리스트 */}
             <List>
-                <ListItemButton>
+                <ListItemButton onClick={() => navigate("/home")}>
                     <ListItemIcon>
                         <HomeRoundedIcon />
                     </ListItemIcon>
@@ -52,7 +55,7 @@ function Sidebar() {
                     <ListItemText primary="알림" />
                 </ListItemButton>
 
-                <ListItemButton>
+                <ListItemButton onClick={() => navigate("/feedWrite")}>
                     <ListItemIcon>
                         <AddBoxRoundedIcon />
                     </ListItemIcon>

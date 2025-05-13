@@ -7,6 +7,7 @@ function FeedList() {
     fetch("http://localhost:3005/feed")
       .then(res => res.json())
       .then(data => {
+        console.log("list-data ===> ", data);
         setFeeds(data.list);
       });
   }, []);

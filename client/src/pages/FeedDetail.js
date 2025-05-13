@@ -16,6 +16,8 @@ import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 
 import { useNavigate, useParams } from "react-router-dom";
+import FeedDetailImageSlider from "../components/FeedDetailImageSlider";
+import KakaoCourseMap from "../components/KakaoCourseMap"; // 코스 지도 컴포넌트
 
 function FeedDetail() {
     const navigate = useNavigate();
@@ -23,32 +25,63 @@ function FeedDetail() {
     //피드
     const { no } = useParams();
     const [feed, setFeed] = useState(null);
+    // 댓글 상태
+    const [comment, setComment] = useState("");
+    const [comments, setComments] = useState([]);
+    // 이미지
+    const [images, setImages] = useState([]);
+    // 코스
+    const [courseList, setCourseList] = useState([]);
+    // esc 누르면 리스트로 이동
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === "Escape") {
+                navigate(-1); // 이전 페이지로 이동
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        // 컴포넌트 언마운트 시 이벤트 제거
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, []);
 
     useEffect(() => {
-        fetch(`/feed/${no}`)
+        fetch(`http://localhost:3005/feed/${no}`)
             .then(res => res.json())
             .then(data => {
-                console.log("📦 응답 확인:", data);   // ✅ 구조 확인
-                setFeed(data.info); // 혹은 setFeed(data) depending on structure
+                console.log("course ===>", data.course)
+                if (data.success) {
+                    setFeed(data.info);        // 피드 본문
+                    setImages(data.images);    // 이미지 배열
+                    setComments(data.comments); // 댓글 배열
+                    setCourseList(data.course); // 코스 데이터
+                }
             });
     }, [no]);
 
-    // 댓글 상태
-    const [comment, setComment] = useState("");
-    const [comments, setComments] = useState([
-        { id: "user1", text: "감성 뿜뿜이네요!" },
-        { id: "user2", text: "주말에 가볼게요!" },
-    ]);
     const handleAddComment = () => {
         if (!comment.trim()) return;
 
-        const newComment = {
-            id: currentUserId,
-            text: comment.trim(),
-        };
-
-        setComments([...comments, newComment]);
-        setComment(""); // 입력창 초기화
+        fetch(`/feed/${no}/comment`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ member_no: 1, content: comment.trim() }),
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    setComment("");
+                    // 새로고침 없이 즉시 반영
+                    setComments(prev => [...prev, {
+                        member_no: 1,
+                        content: comment.trim(),
+                        cdatetime: new Date().toISOString(),
+                    }]);
+                }
+            });
     };
 
     // 좋아요
@@ -64,7 +97,6 @@ function FeedDetail() {
     const handleToggleBookmark = () => {
         setBookmarked(prev => !prev);
     };
-
 
     return (
         <Box
@@ -97,9 +129,10 @@ function FeedDetail() {
                     left: "50%",
                     transform: "translate(-50%, -50%)",
                     backgroundColor: "#fff",
-                    width: "900px",
-                    height: "600px",
-                    display: "flex",
+                    width: "min(95vw, 900px)",        // ✅ 반응형: 화면이 줄어들어도 깨지지 않게
+                    height: "min(90vh, 600px)",       // ✅ 높이도 유동 + 최대 600px 제한
+                    display: "grid",                  // ✅ grid로 명확히 영역 나눔
+                    gridTemplateColumns: "1fr 350px", // ✅ 좌:비율 / 우:고정
                     borderRadius: "8px",
                     overflow: "hidden",
                     zIndex: 1350,
@@ -107,83 +140,107 @@ function FeedDetail() {
             >
 
                 {/* 좌측 이미지 */}
-                <Box sx={{ flex: 1, backgroundColor: "#000" }}>
-                    <img
-                        src="/img/${feed.img_path}"
-                        alt="피드 이미지"
-                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                    />
+                <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
+                    <Box sx={{ flex: 1 }}>
+                        <FeedDetailImageSlider images={images} courseList={courseList} />
+                    </Box>
                 </Box>
-
                 {/* 우측 정보 */}
-                <Box sx={{ width: 350, display: "flex", flexDirection: "column", padding: 2 }}>
+                <Box sx={{ width: 350, display: "flex", flexDirection: "column", height: "100%" }}>
                     {feed && (
                         <>
-                            {/* 작성자 + 날짜 */}
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-                                <Box sx={{ width: 32, height: 32, borderRadius: "50%", backgroundColor: "#ccc" }} />
-                                <Typography fontWeight="bold">{`user_${feed.member_no}`}</Typography>
-                                <Typography variant="caption" color="text.secondary" sx={{ marginLeft: "auto" }}>
-                                    {new Date(feed.cdatetime).toLocaleDateString()}
+                            {/* 1. 제목 영역 */}
+                            <Box sx={{ padding: 2 }}>
+                                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                    <Box sx={{ width: 32, height: 32, borderRadius: "50%", backgroundColor: "#ccc" }} />
+                                    <Typography fontWeight="bold">{`user_${feed.member_no}`}</Typography>
+                                    <Typography variant="caption" color="text.secondary" sx={{ marginLeft: "auto" }}>
+                                        {new Date(feed.cdatetime).toLocaleDateString()}
+                                    </Typography>
+                                </Box>
+
+                                {/* 2. 본문 */}
+                                <Typography variant="body2" sx={{ mt: 2 }}>
+                                    <strong>{`user_${feed.member_no}`}</strong> {feed.title}<br />
+                                    {feed.content}
+                                </Typography>
+                                <Typography variant="body2" sx={{ color: "#888", mt: 1 }}>
+                                    #{feed.region} #{feed.season} #{feed.place_type}
                                 </Typography>
                             </Box>
 
-                            {/* 본문 */}
-                            <Typography variant="body2" sx={{ mb: 2 }}>
-                                <strong>{`user_${feed.member_no}`}</strong> {feed.title}<br />
-                                {feed.content}<br />
-                                <span style={{ color: "#888", cursor: "pointer" }}>
-                                    #{feed.region} #{feed.season} #{feed.place_type}
-                                </span>
-                            </Typography>
+                            {/* 3. 좋아요/아이콘 */}
+                            <Box sx={{ px: 2 }}>
+                                <Divider sx={{ my: 2 }} />
+                                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                                    <Box>
+                                        <IconButton onClick={handleToggleLike}>
+                                            {liked ? (
+                                                <FavoriteIcon sx={{ color: "#e74c3c" }} />
+                                            ) : (
+                                                <FavoriteBorderIcon sx={{ color: "#94B8C4" }} />
+                                            )}
+                                        </IconButton>
 
-                            <Divider sx={{ mb: 2 }} />
+                                        <IconButton><ChatBubbleOutlineIcon sx={{ color: "#94B8C4" }} /></IconButton>
+                                        <IconButton><SendIcon sx={{ color: "#94B8C4" }} /></IconButton>
+                                    </Box>
+                                    <IconButton onClick={handleToggleBookmark}>
+                                        {bookmarked ? (
+                                            <BookmarkIcon sx={{ color: "#707C5C" }} />
+                                        ) : (
+                                            <BookmarkBorderIcon sx={{ color: "#94B8C4" }} />
+                                        )}
+                                    </IconButton>
+                                </Box>
+
+                                <Typography variant="caption" fontWeight="bold" mb={1}>
+                                    좋아요 {likeCount}개
+                                </Typography>
+                            </Box>
                         </>
                     )}
 
-                    {/* 아이콘 + 좋아요 */}
-                    <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                        <Box>
-                            <IconButton onClick={handleToggleLike}>
-                                {liked ? (
-                                    <FavoriteIcon sx={{ color: "#e74c3c" }} />
-                                ) : (
-                                    <FavoriteBorderIcon />
-                                )}
-                            </IconButton>
-                            <IconButton><ChatBubbleOutlineIcon /></IconButton>
-                            <IconButton><SendIcon /></IconButton>
-                        </Box>
-                        <IconButton onClick={handleToggleBookmark}>
-                            {bookmarked ? (
-                                <BookmarkIcon sx={{ color: "#707C5C" }} />
-                            ) : (
-                                <BookmarkBorderIcon />
-                            )}
-                        </IconButton>
+                    {/* 4. 댓글 리스트 */}
+                    <Box sx={{ flex: 1, px: 2, overflowY: "auto", mb: 1 }}>
+                        {comments.map((c, i) => (
+                            <Box key={i} sx={{ mb: 1 }}>
+                                <Typography variant="body2">
+                                    <strong>{`user_${c.member_no}`}</strong> {c.content}
+                                </Typography>
+                            </Box>
+                        ))}
                     </Box>
 
-                    <Typography variant="caption" fontWeight="bold" mb={1}>
-                        좋아요 {likeCount}개
-                    </Typography>
-
-
-                    {/* ✅ 댓글 입력창 */}
-                    <Box sx={{ display: "flex", gap: 1 }}>
+                    {/* 5. 댓글 입력창 */}
+                    <Box sx={{ px: 2, py: 1, borderTop: "1px solid #eee", display: "flex", gap: 1 }}>
                         <TextField
                             variant="standard"
                             placeholder="댓글 달기..."
                             fullWidth
                             value={comment}
                             onChange={(e) => setComment(e.target.value)}
+                            sx={{
+                                "& .MuiInput-underline:after": {
+                                    borderBottomColor: "#94B8C4",
+                                },
+                            }}
                         />
-                        <Button variant="text" onClick={handleAddComment}>게시</Button>
+                        <Button
+                            variant="text"
+                            onClick={handleAddComment}
+                            sx={{
+                                color: "#707C5C",
+                                fontWeight: "bold",
+                                "&:hover": {
+                                    color: "#5e6a4a",
+                                },
+                            }}
+                        >
+                            게시
+                        </Button>
                     </Box>
-
-
-
                 </Box>
-
             </Box>
         </Box>
     );

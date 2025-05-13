@@ -18,14 +18,12 @@ import { useNavigate, useLocation } from "react-router-dom";
 function FeedCard({ feed }) {
   const navigate = useNavigate();
   const location = useLocation();
-
-
   return (
     <Card
       onClick={() => navigate(`/feed/${feed.feed_no}`, {
         state: { backgroundLocation: location },
       })}
-      sx={{ cursor: "pointer", margin : "14px" }}
+      sx={{ cursor: "pointer", margin: "14px" }}
     >
 
       {/* 상단 작성자 정보 */}
@@ -52,12 +50,27 @@ function FeedCard({ feed }) {
       </CardContent>
 
       {/* 이미지 */}
-      <CardMedia
-        component="img"
-        height="360"
-        image={feed.imgUrl}
-        alt="피드 이미지"
-      />
+      <Box
+        sx={{
+          width: "100%",
+          aspectRatio: "1 / 1", // ✅ 정사각형 유지 (지원 안 되면 fallback 필요)
+          backgroundColor: "#000",
+          overflow: "hidden",
+        }}
+      >
+        <img
+          src={`http://localhost:3005/${feed.file_path}`}
+          alt="피드 이미지"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover", // ✅ 꽉 채우고 잘라도 됨
+            display: "block",
+          }}
+        />
+      </Box>
+
+
 
       {/* 아이콘 버튼들 */}
       <Box sx={{ display: "flex", justifyContent: "space-between", px: 2, pt: 1 }}>

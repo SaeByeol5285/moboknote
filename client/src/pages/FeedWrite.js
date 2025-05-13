@@ -6,10 +6,17 @@ import {
     Typography,
     Select,
     MenuItem,
+    IconButton,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+
 import KakaoMap from "../components/KakaoMap";
+import { useNavigate } from "react-router-dom";
+
 
 function FeedWrite() {
+    const navigate = useNavigate();
+
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
 
@@ -26,11 +33,26 @@ function FeedWrite() {
     const [searchPlaces, setSearchPlaces] = useState([]);
     const [selectedPlaceType, setSelectedPlaceType] = useState(null);
 
+    const [images, setImages] = useState([]);
+    const [previews, setPreviews] = useState([]);
+
+    const handleImageChange = (e) => {
+        const files = Array.from(e.target.files);
+        setImages(prev => [...prev, ...files]);
+        const newPreviews = files.map(file => URL.createObjectURL(file));
+        setPreviews(prev => [...prev, ...newPreviews]);
+    };
+
+    const handleRemoveImage = (indexToRemove) => {
+        setImages(prev => prev.filter((_, i) => i !== indexToRemove));
+    };
+
+
     const handleSearch = () => {
         setSearchPlaces([
-            startPlace?.name || "",
-            ...waypoints.map(wp => wp?.name || "").filter(Boolean),
-            endPlace?.name || "",
+            { type: "start", keyword: startPlace.name },
+            ...waypoints.map((wp, i) => ({ type: `waypoint_${i}`, keyword: wp.name })),
+            { type: "end", keyword: endPlace.name },
         ]);
     };
 
@@ -46,21 +68,35 @@ function FeedWrite() {
             courseList: courseList.filter(p => p?.name && p?.lat && p?.lng),
         };
 
-        fetch("http://localhost:3005/feed", {
+        // 게시글 등록 → 이미지 업로드
+        fetch("/feed", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(feedData),
         })
-            .then((res) => res.json())
-            .then((data) => {
-                console.log("✅ 저장 완료:", data);
-                alert("게시물이 등록되었습니다.");
+            .then(res => res.json())
+            .then(data => {
+                console.log("insertId===>", data.insertId);
+                const feedNo = data.insertId;
+
+                // 🔽 이미지 업로드
+                const formData = new FormData();
+                images.forEach(file => formData.append("files", file));
+                formData.append("feed_no", feedNo);
+
+                return fetch("/feed/upload", {
+                    method: "POST",
+                    body: formData,
+                });
             })
-            .catch((err) => {
-                console.error("⛔ 저장 오류:", err);
-                alert("게시물 등록 중 오류가 발생했습니다.");
+            .then(res => res.json())
+            .then(uploadResult => {
+                console.log("✅ 업로드 완료:", uploadResult);
+                alert("게시물 등록 완료!");
+                navigate("/home");
+            })
+            .catch(err => {
+                console.error("⛔ 오류 발생:", err);
             });
     };
 
@@ -186,8 +222,8 @@ function FeedWrite() {
                                     placeType === "start"
                                         ? 0
                                         : placeType === "end"
-                                        ? waypoints.length + 1
-                                        : Number(placeType.split("_")[1]) + 1;
+                                            ? waypoints.length + 1
+                                            : Number(placeType.split("_")[1]) + 1;
 
                                 const updated = [...prev];
                                 updated[index] = placeObj;
@@ -221,7 +257,64 @@ function FeedWrite() {
 
                 {/* 파일 업로드 */}
                 <Typography variant="h6" fontWeight="bold" mb={1}>4. 첨부파일</Typography>
-                <TextField fullWidth type="file" sx={{ mb: 3 }} helperText="가능하면 사진 미리보기, 없으면 파일명 미리보기" />
+                {/* 이미지 미리보기 */}
+                <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mb: 2 }}>
+                    {images.map((img, index) => (
+                        <Box
+                            key={index}
+                            sx={{
+                                position: "relative",
+                                width: 100,
+                                height: 100,
+                                borderRadius: 2,
+                                overflow: "hidden",
+                                border: "1px solid #ccc",
+                            }}
+                        >
+                            <img
+                                src={URL.createObjectURL(img)}
+                                alt={`preview-${index}`}
+                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                            />
+                            <IconButton
+                                onClick={() => handleRemoveImage(index)}
+                                sx={{
+                                    position: "absolute",
+                                    top: 4,
+                                    right: 4,
+                                    backgroundColor: "#000",
+                                    color: "#fff",
+                                    width: 24,
+                                    height: 24,
+                                    "&:hover": { backgroundColor: "#333" },
+                                }}
+                            >
+                                <CloseIcon sx={{ fontSize: 16 }} />
+                            </IconButton>
+                        </Box>
+                    ))}
+                </Box>
+                {/* 숨긴 파일 선택 input */}
+                <input
+                    id="fileInput"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    style={{ display: "none" }}
+                    onChange={(e) => {
+                        const files = Array.from(e.target.files);
+                        setImages(files);
+                    }}
+                />
+
+                {/* 커스텀 버튼으로 대체 */}
+                <Button
+                    variant="outlined"
+                    onClick={() => document.getElementById("fileInput").click()}
+                >
+                    파일 선택
+                </Button>
+
 
                 <Box textAlign="right">
                     <Button variant="contained" onClick={handleSubmit}>게시</Button>
