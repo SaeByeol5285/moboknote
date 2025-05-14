@@ -112,6 +112,11 @@ function Login() {
                     variant="outlined"
                     value={pwd}
                     onChange={(e) => setPwd(e.target.value)}
+                    onKeyUp={(e) => {
+                        if (e.key === "Enter") {
+                            handleLogin();
+                        }
+                    }}
                     sx={{
                         mb: 2,
                         "& label.Mui-focused": {

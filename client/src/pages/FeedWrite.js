@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
     Box,
     TextField,
@@ -12,10 +12,14 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import KakaoMap from "../components/KakaoMap";
 import { useNavigate } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import { userState } from "../recoil/atoms";
 
 
 function FeedWrite() {
     const navigate = useNavigate();
+    const user = useRecoilValue(userState);
+    const currentUserId = user.member_no;
 
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
@@ -47,7 +51,6 @@ function FeedWrite() {
         setImages(prev => prev.filter((_, i) => i !== indexToRemove));
     };
 
-
     const handleSearch = () => {
         setSearchPlaces([
             { type: "start", keyword: startPlace.name },
@@ -57,7 +60,9 @@ function FeedWrite() {
     };
 
     const handleSubmit = () => {
+        console.log(currentUserId);
         const feedData = {
+            member_no: currentUserId,
             title,
             content,
             region,
@@ -98,7 +103,14 @@ function FeedWrite() {
             .catch(err => {
                 console.error("⛔ 오류 발생:", err);
             });
+
     };
+    useEffect(() => {
+            if (!user.isLogin) {
+                alert("로그인 후 사용해주세요.");
+                navigate("/login");
+            }
+        }, []);
 
     return (
         <Box sx={{ p: 4 }}>

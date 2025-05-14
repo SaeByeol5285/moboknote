@@ -1,23 +1,34 @@
 import React from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import { userState } from "../recoil/atoms";
+
+//mui
 import {
   Box,
   Card,
   CardMedia,
   CardContent,
   Typography,
-  IconButton
+  IconButton,
+  Avatar
 } from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import SendIcon from "@mui/icons-material/Send";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import { useNavigate, useLocation } from "react-router-dom";
+
 
 
 
 function FeedCard({ feed }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const user = useRecoilValue(userState);
+  const currentUserId = user.member_no;
+
+
+
   return (
     <Card
       onClick={() => navigate(`/feed/${feed.feed_no}`, {
@@ -28,26 +39,21 @@ function FeedCard({ feed }) {
 
       {/* 상단 작성자 정보 */}
       <CardContent sx={{ display: "flex", alignItems: "center", padding: "14px" }}>
-        <Box
-          sx={{
-            width: 32,
-            height: 32,
-            borderRadius: "50%",
-            backgroundColor: "#cfcfcf",
-            marginRight: "10px"
-          }}
-        />
-        <Typography variant="subtitle2" fontWeight={600}>
-          {feed.userId}
-        </Typography>
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          sx={{ marginLeft: "auto" }}
-        >
-          {feed.cdatetime}
-        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Avatar
+            src={
+              user.profile_img
+                ? `http://localhost:3005/uploads/profile/${user.profile_img}`
+                : "default.png"
+            }
+          />
+          <Typography fontWeight="bold">{feed.nickname}</Typography>
+          <Typography variant="caption" color="text.secondary">
+            {new Date(feed.cdatetime).toLocaleDateString()}
+          </Typography>
+        </Box>
       </CardContent>
+
 
       {/* 이미지 */}
       <Box
@@ -58,6 +64,7 @@ function FeedCard({ feed }) {
           overflow: "hidden",
         }}
       >
+
         <img
           src={`http://localhost:3005/${feed.file_path}`}
           alt="피드 이미지"
@@ -93,7 +100,7 @@ function FeedCard({ feed }) {
 
         {/* 본문 (더보기 포함) */}
         <Typography variant="body2">
-          <strong>{feed.userId}</strong>{" "}
+          <strong>{feed.nickname}</strong>{" "}
           {feed.content.slice(0, 30)}
           <span style={{ color: "#888", cursor: "pointer" }}>... 더보기</span>
         </Typography>

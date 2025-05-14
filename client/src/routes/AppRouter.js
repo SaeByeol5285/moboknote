@@ -7,59 +7,33 @@ import MyPage from "../pages/MyPage";
 import Home from "../pages/Home";
 import MainLayout from "../layouts/MainLayout";
 import FeedDetail from "../pages/FeedDetail";
-
+import FeedEdit from "../pages/FeedEdit";
 function AppRouter() {
-    const location = useLocation();
-    const state = location.state;
-    const isAuthPage = location.pathname === "/login" || location.pathname === "/register";
+  const location = useLocation();
+  const state = location.state;
+  const background = state?.backgroundLocation || location;
 
-    return (
+  return (
+    <>
+      {/* 1. 백그라운드 페이지 라우팅 */}
+      <Routes location={background}>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/home" element={<MainLayout><Home /></MainLayout>} />
+        <Route path="/feedWrite" element={<MainLayout><FeedWrite /></MainLayout>} />
+        <Route path="/mypage" element={<MainLayout><MyPage /></MainLayout>} />
+        <Route path="/feed/edit/:no" element={<MainLayout><FeedEdit /></MainLayout>} />
+      </Routes>
+
+      {/* 2. 모달 페이지 렌더링 (현재 location 기준) */}
+      {state?.backgroundLocation && (
         <Routes>
-            <Route path="/" element={<Navigate to="/login" replace />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-
-            {/* 로그인 후 접근 가능한 메인 홈 페이지 */}
-            <Route
-                path="/home"
-                element={
-                    <MainLayout>
-                        <Home />
-                    </MainLayout>
-                }
-            />
-
-            <Route
-                path="/feedWrite"
-                element={
-                    <MainLayout>
-                        <FeedWrite />
-                    </MainLayout>
-                }
-            />
-
-            <Route
-                path="/mypage"
-                element={
-                    <MainLayout>
-                        <MyPage />
-                    </MainLayout>
-                }
-            />
-
-            {/* ✅ 모달은 backgroundLocation 있을 때만 */}
-            {state?.backgroundLocation && (
-
-                <Route path="/feed/:no" element={
-                    <MainLayout>
-                        <FeedDetail />
-                    </MainLayout>
-
-                } />
-
-            )}
+          <Route path="/feed/:no" element={<MainLayout><FeedDetail /></MainLayout>} />
         </Routes>
-    );
+      )}
+    </>
+  );
 }
 
 export default AppRouter;

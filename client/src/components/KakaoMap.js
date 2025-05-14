@@ -6,6 +6,8 @@ function KakaoMap({ searchPlaces, selectedPlaceType, onSelectPlace }) {
     const polylineRef = useRef(null);
     const placesServiceRef = useRef(null);
     const selectedPlaceTypeRef = useRef(null);
+    const overlaysRef = useRef([]);
+
 
     useEffect(() => {
         selectedPlaceTypeRef.current = selectedPlaceType;
@@ -67,6 +69,10 @@ function KakaoMap({ searchPlaces, selectedPlaceType, onSelectPlace }) {
 
         markersRef.current.forEach((m) => m.setMap(null));
         markersRef.current = [];
+
+        overlaysRef.current.forEach((o) => o.setMap(null));  // ✅ 오버레이 제거
+        overlaysRef.current = [];
+
 
         if (polylineRef.current) polylineRef.current.setMap(null);
 
@@ -188,12 +194,14 @@ function KakaoMap({ searchPlaces, selectedPlaceType, onSelectPlace }) {
                     `;
 
                 // 오버레이 생성
-                new window.kakao.maps.CustomOverlay({
+                const overlay = new window.kakao.maps.CustomOverlay({
                     map: mapRef.current,
                     position: pos,
                     content,
                     yAnchor: 1,
                 });
+                overlaysRef.current.push(overlay);
+
 
                 // 선택적으로 마커도 함께 생성 (작은 점처럼)
                 const marker = new window.kakao.maps.Marker({

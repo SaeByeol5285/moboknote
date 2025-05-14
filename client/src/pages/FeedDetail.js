@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+
+import { useRecoilValue } from "recoil";
+import { userState } from "../recoil/atoms";
+
+// mui
 import {
     Box,
     Typography,
     Divider,
     TextField,
     Button,
-    IconButton
+    IconButton,
+    Avatar
 } from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
@@ -15,13 +22,26 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 
-import { useNavigate, useParams } from "react-router-dom";
-import FeedDetailImageSlider from "../components/FeedDetailImageSlider";
+// 컴포넌트
+import FeedDetailImageSlider from "../components/FeedDetailImageSlider"; // 이미지 슬라이더
 import KakaoCourseMap from "../components/KakaoCourseMap"; // 코스 지도 컴포넌트
+import FeedOptions from "../components/FeedOptions";
+
+
 
 function FeedDetail() {
+    //페이지 이동
+    const location = useLocation();
     const navigate = useNavigate();
-    const currentUserId = "mubok_user"; // 하드코딩된 사용자
+    const background = location.state?.backgroundLocation;
+
+    const handleClose = () => {
+        navigate(background || "/home", { replace: true });
+    };
+
+    const user = useRecoilValue(userState);
+    const currentUserId = user.member_no;
+
     //피드
     const { no } = useParams();
     const [feed, setFeed] = useState(null);
@@ -36,10 +56,9 @@ function FeedDetail() {
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === "Escape") {
-                navigate(-1); // 이전 페이지로 이동
+                navigate(background || "/home", { replace: true });
             }
         };
-
         window.addEventListener("keydown", handleKeyDown);
 
         // 컴포넌트 언마운트 시 이벤트 제거
@@ -109,13 +128,13 @@ function FeedDetail() {
         >
             {/* 닫기 버튼 */}
             <IconButton
-                onClick={() => navigate(-1)}
+                onClick={handleClose}
                 sx={{
                     position: "absolute",
                     top: 20,
                     right: 20,
                     color: "#fff",
-                    backgroundColor: "rgba(0,0,0,0.5)",
+                    backgroundColor: "rgba(0, 0, 0, 0.77)",
                     zIndex: 1400,
                 }}
             >
@@ -151,17 +170,36 @@ function FeedDetail() {
                         <>
                             {/* 1. 제목 영역 */}
                             <Box sx={{ padding: 2 }}>
-                                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                    <Box sx={{ width: 32, height: 32, borderRadius: "50%", backgroundColor: "#ccc" }} />
-                                    <Typography fontWeight="bold">{`user_${feed.member_no}`}</Typography>
-                                    <Typography variant="caption" color="text.secondary" sx={{ marginLeft: "auto" }}>
-                                        {new Date(feed.cdatetime).toLocaleDateString()}
-                                    </Typography>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        mb: 1,
+                                    }}
+                                >
+                                    {/* 왼쪽: 프로필 + 닉네임 */}
+                                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                        <Avatar
+                                            src={
+                                                user.profile_img
+                                                    ? `http://localhost:3005/uploads/profile/${user.profile_img}`
+                                                    : "default.png"
+                                            }
+                                        />
+                                        <Typography fontWeight="bold">{feed.nickname}</Typography>
+                                        <Typography variant="caption" color="text.secondary">
+                                            {new Date(feed.cdatetime).toLocaleDateString()}
+                                        </Typography>
+                                    </Box>
+
+                                    {/* 오른쪽: 더보기 메뉴 */}
+                                    <FeedOptions feed={feed} />
                                 </Box>
 
                                 {/* 2. 본문 */}
                                 <Typography variant="body2" sx={{ mt: 2 }}>
-                                    <strong>{`user_${feed.member_no}`}</strong> {feed.title}<br />
+                                    <strong>{feed.nickname}</strong> {feed.title}<br />
                                     {feed.content}
                                 </Typography>
                                 <Typography variant="body2" sx={{ color: "#888", mt: 1 }}>

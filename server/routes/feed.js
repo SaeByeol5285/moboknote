@@ -10,8 +10,7 @@ router.post("/", async (req, res) => {
   const conn = await db.getConnection(); // 트랜잭션용
   try {
     const {
-      //아이디 일단 하드코딩
-      member_no = 1,
+      member_no,
       title,
       content,
       region,
@@ -49,7 +48,7 @@ router.post("/", async (req, res) => {
     }
 
     await conn.commit();
-    res.json({ success: true, insertId: feed_no });  // ✅ 이름을 insertId로 바꿔주기
+    res.json({ success: true, insertId: feed_no });
 
   } catch (err) {
     await conn.rollback();
@@ -71,7 +70,7 @@ router.post("/upload", upload.array("files"), async (req, res) => {
   // ✅ 첫 번째 파일만 썸네일 처리
   const files = req.files.map((file, idx) => ({
     file_name: file.filename,
-    file_path: file.path.replace(/\\/g, "/"),  // 슬래시 치환 추가
+    file_path: `uploads/${file.filename}`.replace(/\\/g, "/"), // ✅ 슬래시 치환
     is_thumbnail: idx === 0 ? "Y" : "N",
   }));
 
@@ -95,7 +94,8 @@ router.post("/upload", upload.array("files"), async (req, res) => {
 //리스트
 router.get("/", async (req, res) => {
   try {
-    const [rows] = await db.query("SELECT F.*, I.file_path as file_path FROM feed F LEFT JOIN feed_img I ON F.feed_no = I.feed_no AND I.is_thumbnail = 'Y' ORDER BY F.feed_no DESC");
+    let sql = "SELECT F.*, I.file_path as file_path, M.nickname, M.profile_img FROM feed F LEFT JOIN feed_img I ON F.feed_no = I.feed_no AND I.is_thumbnail = 'Y' INNER JOIN member M ON F.member_no = M.member_no ORDER BY F.feed_no DESC"
+    const [rows] = await db.query(sql);
     res.json({ list: rows });
   } catch (err) {
     console.error("피드 목록 오류:", err);
@@ -108,7 +108,7 @@ router.get("/:no", async (req, res) => {
   const { no } = req.params;
   try {
     // 1. 피드 정보
-    const [feedRows] = await db.query("SELECT * FROM feed WHERE feed_no = ?", [no]);
+    const [feedRows] = await db.query("SELECT f.*, m.nickname, m.profile_img FROM feed f JOIN member m ON f.member_no = m.member_no WHERE f.feed_no = ?", [no]);
     const feedInfo = feedRows[0];
 
     // 2. 첨부 이미지
@@ -139,13 +139,66 @@ router.get("/:no", async (req, res) => {
       success: true,
       info: feedInfo,
       images: imgRows,
-      comments : cmtRows,
-      course : courseRows
+      comments: cmtRows,
+      course: courseRows
     });
 
   } catch (err) {
     console.error("❌ 상세보기 데이터 조회 실패:", err);
     res.status(500).json({ success: false });
+  }
+});
+
+// 게시글 수정
+router.put("/:no", async (req, res) => {
+  const conn = await db.getConnection();
+  const { no } = req.params;
+  const {
+    title,
+    content,
+    region,
+    season,
+    bariType,
+    locationType,
+    ccType,
+    courseList = []
+  } = req.body;
+
+  try {
+    await conn.beginTransaction();
+
+    // 1. feed 테이블 update
+    await conn.query(
+      `UPDATE feed 
+       SET title = ?, content = ?, region = ?, season = ?, 
+           bari_type = ?, place_type = ?, bike_cc = ?, udatetime = NOW()
+       WHERE feed_no = ?`,
+      [title, content, region, season, bariType, locationType, ccType, no]
+    );
+
+    // 2. 기존 course 삭제
+    await conn.query(`DELETE FROM course WHERE feed_no = ?`, [no]);
+
+    // 3. course 새로 insert
+    for (let i = 0; i < courseList.length; i++) {
+      const { name, lat, lng } = courseList[i];
+      if (!name || lat == null || lng == null) continue;
+
+      await conn.query(
+        `INSERT INTO course (feed_no, order_no, place_name, latitude, longitude)
+         VALUES (?, ?, ?, ?, ?)`,
+        [no, i, name, lat, lng]
+      );
+    }
+
+    await conn.commit();
+    res.json({ success: true });
+  } catch (err) {
+    await conn.rollback();
+    console.error("❌ 게시글 수정 중 오류:", err);
+    res.status(500).json({ success: false, message: "서버 오류" });
+  } finally {
+    conn.release();
   }
 });
 
