@@ -27,15 +27,8 @@ function MainLayout({ children }) {
                         padding: "0 20px",
                     }}
                 >
-                    <HeaderFilter />
-
-                    <Box sx={{ display: "flex", justifyContent: "center" }}>
-                        <Box sx={{ width: "600px" }}>
-                            {children}
-                        </Box>
-                    </Box>
+                    {children}
                 </Box>
-
 
 
                 {/* 우측 위젯 */}

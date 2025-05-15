@@ -114,8 +114,8 @@ function FeedWrite() {
 
     return (
         <Box sx={{ p: 4 }}>
-            <Typography variant="h5" fontWeight="bold" mb={2}>새 게시물 만들기</Typography>
             <Box sx={{ maxWidth: "800px", width: "100%", margin: "0 auto", p: 4 }}>
+            <Typography variant="h5" fontWeight="bold" mb={2}>새 게시물 만들기</Typography>
                 {/* 선택 드롭다운 */}
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 3 }}>
                     <Select value={region} onChange={(e) => setRegion(e.target.value)} displayEmpty size="small" fullWidth>

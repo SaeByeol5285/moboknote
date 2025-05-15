@@ -202,6 +202,28 @@ router.put("/:no", async (req, res) => {
   }
 });
 
+// 삭제
+router.delete("/:no", async (req, res) => {
+  const { no } = req.params;
+  try {
+    let sql1 = "DELETE FROM feed WHERE feed_no = ?"
+    let sql2 = "DELETE FROM feed_img WHERE feed_no = ?"
+    let sql3 = "DELETE FROM course WHERE feed_no = ?"
+    let sql4 = "DELETE FROM comment WHERE feed_no =?"
+    await db.query(sql1, [no]);
+    await db.query(sql2, [no]);
+    await db.query(sql3, [no]);
+    await db.query(sql4, [no]);
+
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("게시글 삭제 실패 :", err);
+    res.status(500).json({ success: false });
+  }
+
+})
+
 // 댓글작성
 router.post("/:no/comment", async (req, res) => {
   const { no } = req.params;

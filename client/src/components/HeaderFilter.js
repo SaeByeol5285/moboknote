@@ -13,13 +13,16 @@ function HeaderFilter() {
     return (
         <Box
             sx={{
+                padding: "20px 0",
                 display: "flex",
-                alignItems: "center",
-                gap: "12px",
-                margin: "24px 0",
+                gap: 2,
+                flexWrap: "nowrap", // ✅ 유지 가능
                 justifyContent: "center",
+                alignItems: "center",
+                overflowX: "auto",   // ✅ 혹시라도 넘치면 스크롤 허용
             }}
         >
+
             {/* 지역 */}
             <FormControl size="small" sx={{ minWidth: 160 }} color="success">
                 <InputLabel id="region-label">지역</InputLabel>

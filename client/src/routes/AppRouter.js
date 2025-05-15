@@ -8,6 +8,9 @@ import Home from "../pages/Home";
 import MainLayout from "../layouts/MainLayout";
 import FeedDetail from "../pages/FeedDetail";
 import FeedEdit from "../pages/FeedEdit";
+import AppInitializer from "../components/AppInitializer";
+
+
 function AppRouter() {
   const location = useLocation();
   const state = location.state;
@@ -15,6 +18,8 @@ function AppRouter() {
 
   return (
     <>
+      <AppInitializer />
+
       {/* 1. 백그라운드 페이지 라우팅 */}
       <Routes location={background}>
         <Route path="/" element={<Navigate to="/login" replace />} />

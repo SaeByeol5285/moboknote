@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from "react";
 import FeedCard from "../components/FeedCard";
+import { useLocation } from "react-router-dom";
+
 
 function FeedList() {
   const [feeds, setFeeds] = useState([]);
+  const location = useLocation();
+
   useEffect(() => {
     fetch("http://localhost:3005/feed")
       .then(res => res.json())
       .then(data => {
-        console.log("list-data ===> ", data);
         setFeeds(data.list);
       });
-  }, []);
+  },[location]);
 
 
   return (
