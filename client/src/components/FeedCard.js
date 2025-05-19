@@ -1,9 +1,11 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { userState } from "../recoil/atoms";
 
 //mui
+import Button from "@mui/material/Button";
 import {
   Box,
   Card,
@@ -11,7 +13,8 @@ import {
   CardContent,
   Typography,
   IconButton,
-  Avatar
+  Avatar,
+
 } from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
@@ -19,13 +22,38 @@ import SendIcon from "@mui/icons-material/Send";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 
 
-
-
 function FeedCard({ feed }) {
   const navigate = useNavigate();
   const location = useLocation();
   const user = useRecoilValue(userState);
   const currentUserId = user.member_no;
+  const [isFollowing, setIsFollowing] = useState(false);
+
+  useEffect(() => {
+    if (currentUserId !== feed.member_no) {
+      fetch(`http://localhost:3005/follow/check?from=${currentUserId}&to=${feed.member_no}`)
+        .then(res => res.json())
+        .then(data => setIsFollowing(data.result === 1)); // result: 1이면 팔로우 중
+    }
+  }, [currentUserId, feed.member_no]);
+
+  const handleFollowToggle = (e) => {
+    e.stopPropagation(); // 카드 클릭 이벤트 막기
+
+    const method = isFollowing ? "DELETE" : "POST";
+    fetch(`http://localhost:3005/follow`, {
+      method: method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        follower_no: currentUserId,
+        following_no: feed.member_no,
+      }),
+    })
+      .then((res) => res.json())
+      .then(() => setIsFollowing(!isFollowing));
+  };
 
 
 
@@ -48,6 +76,30 @@ function FeedCard({ feed }) {
             }
           />
           <Typography fontWeight="bold">{feed.nickname}</Typography>
+          {/* 팔로우 버튼 조건부 렌더링 */}
+          {currentUserId !== feed.member_no && (
+            <Button
+              size="small"
+              onClick={handleFollowToggle}
+              sx={{
+                ml: 1,
+                backgroundColor: isFollowing ? "#fff" : "#707C5C",
+                color: isFollowing ? "#707C5C" : "#fff",
+                border: "1px solid #707C5C",
+                "&:hover": {
+                  backgroundColor: isFollowing ? "#f2f2f2" : "#5a6b4f", // 호버 시 색
+                },
+                textTransform: "none", // 대문자 방지
+                fontWeight: 500,
+                fontSize: "0.75rem",
+                padding: "4px 10px",
+                borderRadius: "12px",
+                minWidth: "auto",
+              }}
+            >
+              {isFollowing ? "언팔로우" : "팔로우"}
+            </Button>
+          )}
           <Typography variant="caption" color="text.secondary">
             {new Date(feed.cdatetime).toLocaleDateString()}
           </Typography>

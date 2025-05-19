@@ -16,7 +16,7 @@ function KakaoMap({ searchPlaces, selectedPlaceType, onSelectPlace }) {
     useEffect(() => {
         const script = document.createElement("script");
         script.src =
-            "https://dapi.kakao.com/v2/maps/sdk.js?appkey=169f77e98308a55fbb792d9f31ef9adf&autoload=false&libraries=services";
+            "https://dapi.kakao.com/v2/maps/sdk.js?appkey=353ca2e65b20fcefc1e1ecd39846d46b&autoload=false&libraries=services";
         script.async = true;
         document.head.appendChild(script);
 

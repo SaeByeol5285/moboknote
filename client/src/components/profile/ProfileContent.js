@@ -1,4 +1,4 @@
-function MyPage(){
+function ProfileContent(){
 
     return(
         <>
@@ -8,4 +8,4 @@ function MyPage(){
     )
 }
 
-export default MyPage
+export default ProfileContent

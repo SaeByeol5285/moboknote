@@ -63,7 +63,7 @@ function Sidebar() {
                 </ListItemButton>
 
                 <ListItemButton>
-                    <ListItemIcon>
+                    <ListItemIcon onClick={() => navigate("/profile")}>
                         <PersonOutlineRoundedIcon sx={{ color: "#aaa" }} />
                     </ListItemIcon>
                     <ListItemText primary="프로필" />

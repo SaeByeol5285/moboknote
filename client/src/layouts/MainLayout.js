@@ -33,7 +33,7 @@ function MainLayout({ children }) {
 
                 {/* 우측 위젯 */}
                 <Box sx={{ width: "220px", flexShrink: 0 }}>
-                    <RightWidgets />
+                    {/* <RightWidgets /> */}
                 </Box>
             </Box>
         </Box>

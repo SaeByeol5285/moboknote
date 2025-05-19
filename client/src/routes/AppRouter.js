@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import FeedWrite from "../pages/FeedWrite";
-import MyPage from "../pages/MyPage";
+import Profile from "../pages/Profile";
 import Home from "../pages/Home";
 import MainLayout from "../layouts/MainLayout";
 import FeedDetail from "../pages/FeedDetail";
@@ -27,7 +27,7 @@ function AppRouter() {
         <Route path="/register" element={<Register />} />
         <Route path="/home" element={<MainLayout><Home /></MainLayout>} />
         <Route path="/feedWrite" element={<MainLayout><FeedWrite /></MainLayout>} />
-        <Route path="/mypage" element={<MainLayout><MyPage /></MainLayout>} />
+        <Route path="/profile" element={<MainLayout><Profile /></MainLayout>} />
         <Route path="/feed/edit/:no" element={<MainLayout><FeedEdit /></MainLayout>} />
       </Routes>
 

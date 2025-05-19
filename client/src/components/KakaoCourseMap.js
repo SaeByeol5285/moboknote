@@ -8,7 +8,7 @@ function KakaoCourseMap({ courseList }) {
     useEffect(() => {
         const script = document.createElement("script");
         script.src =
-            "https://dapi.kakao.com/v2/maps/sdk.js?appkey=169f77e98308a55fbb792d9f31ef9adf&autoload=false";
+            "https://dapi.kakao.com/v2/maps/sdk.js?appkey=353ca2e65b20fcefc1e1ecd39846d46b&autoload=false";
         script.async = true;
         document.head.appendChild(script);
 
