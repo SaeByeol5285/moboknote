@@ -86,10 +86,10 @@
 
 ### 🔐 로그인 / 회원가입  
 <p align="center">
-  <img src="./images/page-login.PNG" alt="로그인 화면" width="700"/>
+  <img src="./images/page-login.PNG" alt="로그인 화면" width="300"/>
 </p>
 <p align="center">
-  <img src="./images/page-register.PNG" alt="회원가입 화면" width="700"/>
+  <img src="./images/page-register.PNG" alt="회원가입 화면" width="300"/>
 </p>
 
 ---
