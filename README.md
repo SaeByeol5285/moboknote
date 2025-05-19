@@ -74,6 +74,9 @@
 <p align="center">
   <img src="./images/page-detail2.PNG" alt="피드 상세 화면 2" width="700"/>
 </p>
+<p align="center">
+  <img src="./images/page-map.PNG" alt="피드 상세 화면 3" width="700"/>
+</p>
 
 ---
 
