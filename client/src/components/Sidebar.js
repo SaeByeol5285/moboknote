@@ -62,8 +62,8 @@ function Sidebar() {
                     <ListItemText primary="글쓰기" />
                 </ListItemButton>
 
-                <ListItemButton>
-                    <ListItemIcon onClick={() => navigate("/profile")}>
+                <ListItemButton onClick={() => navigate("/profile")}>
+                    <ListItemIcon>
                         <PersonOutlineRoundedIcon sx={{ color: "#aaa" }} />
                     </ListItemIcon>
                     <ListItemText primary="프로필" />

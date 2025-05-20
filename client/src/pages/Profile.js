@@ -1,23 +1,36 @@
-import React from "react";
-import MainLayout from "../layouts/MainLayout";
+import React, { useState } from "react";
 import ProfileHeader from "../components/profile/ProfileHeader";
 import ProfileTabs from "../components/profile/ProfileTabs";
 import ProfileContent from "../components/profile/ProfileContent";
-
 import { Box } from "@mui/material";
 
 const Profile = () => {
+  const [tabIndex, setTabIndex] = useState(0);
+
   return (
-      <Box sx={{ padding: "30px 50px", backgroundColor: "#FDFBF5" }}>
-        {/* 프로필 상단 (이미지, 소개글 등) */}
+    <Box
+      sx={{
+        backgroundColor: "#FDFBF5",
+        display: "flex",
+        justifyContent: "center",
+        paddingTop: 4,
+        paddingBottom: 10,
+      }}
+    >
+      <Box
+        sx={{
+          width: "100%",
+          maxWidth: "1000px", // ✅ 콘텐츠 최대 너비 제한
+          padding: "0 30px",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         <ProfileHeader />
-
-        {/* 탭 (내 게시물 / 저장한 코스 / 친구 목록) */}
-        <ProfileTabs />
-
-        {/* 탭에 따라 바뀌는 내용 */}
-        <ProfileContent />
+        <ProfileTabs tabIndex={tabIndex} setTabIndex={setTabIndex} />
+        <ProfileContent tabIndex={tabIndex} />
       </Box>
+    </Box>
   );
 };
 
