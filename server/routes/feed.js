@@ -4,7 +4,6 @@ const db = require("../db");
 const dayjs = require("dayjs");
 const upload = require("../middleware/upload");
 
-
 // 게시글 등록
 router.post("/", async (req, res) => {
   const conn = await db.getConnection(); // 트랜잭션용
@@ -240,5 +239,7 @@ router.post("/:no/comment", async (req, res) => {
     res.status(500).json({ success: false });
   }
 });
+
+
 
 module.exports = router;

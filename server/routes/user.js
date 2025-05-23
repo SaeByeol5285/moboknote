@@ -76,14 +76,59 @@ router.post("/register", async (req, res) => {
 router.get("/check-email", async (req, res) => {
     const { email } = req.query;
     try {
-      const [rows] = await db.query("SELECT * FROM member WHERE email = ?", [email]);
-      if (rows.length > 0) {
-        return res.json({ success: false, message: "이미 존재하는 이메일입니다." });
-      }
-      res.json({ success: true, message: "사용 가능한 이메일입니다." });
+        const [rows] = await db.query("SELECT * FROM member WHERE email = ?", [email]);
+        if (rows.length > 0) {
+            return res.json({ success: false, message: "이미 존재하는 이메일입니다." });
+        }
+        res.json({ success: true, message: "사용 가능한 이메일입니다." });
     } catch (err) {
-      res.status(500).json({ success: false, message: "서버 오류" });
+        res.status(500).json({ success: false, message: "서버 오류" });
     }
-  });
+});
+
+// 내가 작성한 글 
+router.get("/:no/feed", async (req, res) => {
+    const { no } = req.params;
+    try {
+        let sql = "SELECT F.*, I.file_path as file_path, M.nickname, M.profile_img FROM feed F LEFT JOIN feed_img I ON F.feed_no = I.feed_no AND I.is_thumbnail = 'Y' INNER JOIN member M ON F.member_no = M.member_no WHERE F.member_no = ? ORDER BY F.feed_no DESC"
+        const [rows] = await db.query(sql, [no]);
+        res.json({ list: rows });
+    } catch (err) {
+        console.error("피드 목록 오류:", err);
+        res.status(500).send("DB 오류");
+    }
+});
+// 북마크한 글
+router.get("/:no/bookmark", async (req, res) => {
+    const { no } = req.params;
+    try {
+        let sql = `
+      SELECT F.*, I.file_path AS file_path, M.nickname, M.profile_img
+      FROM bookmark B
+      JOIN feed F ON B.feed_no = F.feed_no
+      LEFT JOIN feed_img I ON F.feed_no = I.feed_no AND I.is_thumbnail = 'Y'
+      INNER JOIN member M ON F.member_no = M.member_no
+      WHERE B.member_no = ?
+      ORDER BY B.cdatetime DESC
+    `
+        const [rows] = await db.query(sql, [no]);
+        res.json({ list: rows });
+    } catch (err) {
+        console.error("피드 목록 오류:", err);
+        res.status(500).send("DB 오류");
+    }
+});
+// 팔로우 리스트
+router.get("/:no/friend", async (req, res) => {
+    const { no } = req.params;
+    try {
+        let sql = "SELECT * FROM follow F INNER JOIN member M ON F.following_no = M.member_no WHERE F.follower_no = ?"
+        const [rows] = await db.query(sql, [no]);
+        res.json({ list: rows });
+    } catch (err) {
+        console.error("피드 목록 오류:", err);
+        res.status(500).send("DB 오류");
+    }
+});
 
 module.exports = router;

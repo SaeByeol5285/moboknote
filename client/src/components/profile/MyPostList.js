@@ -1,23 +1,28 @@
 import React from "react";
-import { Box } from "@mui/material";
+import { useEffect, useState } from "react";
 import PostCard from "./PostCard";
-
-const dummyPosts = [
-  {
-    feed_no: 1,
-    file_path: "uploads/feed/sample1.jpg",
-    content: "강릉 바다 코스 정말 멋져요!",
-    cdatetime: "2025-05-15T12:34:56",
-  },
-  {
-    feed_no: 2,
-    file_path: "uploads/feed/sample2.jpg",
-    content: "지리산 구불길 후기가 왔습니다.",
-    cdatetime: "2025-05-16T09:12:30",
-  },
-];
+import { useRecoilValue } from "recoil";
+import { userState } from "../../recoil/atoms";
+import { Box } from "@mui/material";
 
 const MyPostList = () => {
+  const user = useRecoilValue(userState);
+  const [posts, setPosts] = useState([]);
+  useEffect(() => {
+    if (!user?.member_no) return;
+
+    fetch(`http://localhost:3005/user/${user.member_no}/feed`)
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+      setPosts(data.list)
+    })
+    .catch(error => console.error("게시글 불러오기 실패", error))
+  },[user.member_no])
+
+
+  if(!user?.member_no) return null;
+
   return (
     <Box sx={{ display: "flex", justifyContent: "center" }}>
       <Box
@@ -29,7 +34,7 @@ const MyPostList = () => {
           maxWidth: "960px",
         }}
       >
-        {dummyPosts.map((post) => (
+        {posts.map((post) => (
           <PostCard key={post.feed_no} post={post} />
         ))}
       </Box>

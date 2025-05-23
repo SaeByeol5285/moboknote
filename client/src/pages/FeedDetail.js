@@ -19,14 +19,13 @@ import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import BookmarkIcon from "@mui/icons-material/Bookmark";
-import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+
 
 // 컴포넌트
 import FeedDetailImageSlider from "../components/FeedDetailImageSlider"; // 이미지 슬라이더
 import KakaoCourseMap from "../components/KakaoCourseMap"; // 코스 지도 컴포넌트
 import FeedOptions from "../components/FeedOptions";
-
+import BookmarkBtn from "../components/BookmarkBtn";
 
 
 function FeedDetail() {
@@ -111,11 +110,6 @@ function FeedDetail() {
         setLikeCount(prev => liked ? prev - 1 : prev + 1);
     };
 
-    // 북마크
-    const [bookmarked, setBookmarked] = useState(false);
-    const handleToggleBookmark = () => {
-        setBookmarked(prev => !prev);
-    };
 
     return (
         <Box
@@ -223,14 +217,9 @@ function FeedDetail() {
                                         <IconButton><ChatBubbleOutlineIcon sx={{ color: "#94B8C4" }} /></IconButton>
                                         <IconButton><SendIcon sx={{ color: "#94B8C4" }} /></IconButton>
                                     </Box>
-                                    <IconButton onClick={handleToggleBookmark}>
-                                        {bookmarked ? (
-                                            <BookmarkIcon sx={{ color: "#707C5C" }} />
-                                        ) : (
-                                            <BookmarkBorderIcon sx={{ color: "#94B8C4" }} />
-                                        )}
-                                    </IconButton>
+
                                 </Box>
+                                <BookmarkBtn feed_no={feed.feed_no} />
 
                                 <Typography variant="caption" fontWeight="bold" mb={1}>
                                     좋아요 {likeCount}개
