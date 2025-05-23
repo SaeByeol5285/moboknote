@@ -23,7 +23,7 @@ const BookmarkBtn = ({feed_no}) => {
         const url = "http://localhost:3005/bookmark"
         const options = {
             method: isBookmarked? "DELETE" : "POST",
-            headers : {"Content-Type" : "applicatiln/json"},
+            headers : {"Content-Type" : "application/json"},
             body : JSON.stringify({
                 member_no : user.member_no,
                 feed_no : feed_no,
