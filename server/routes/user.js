@@ -131,4 +131,27 @@ router.get("/:no/friend", async (req, res) => {
     }
 });
 
+// 프로필용 요약 정보
+router.get("/:member_no/summary", async (req, res) => {
+    const { member_no } = req.params;
+    try {
+        let sql_post = "SELECT COUNT(*) AS post_count FROM feed WHERE member_no = ?";
+        let sql_following = "SELECT COUNT(*) AS following_count FROM follow WHERE follower_no = ?";
+        let sql_follower = "SELECT COUNT(*) AS follower_count FROM follow WHERE following_no =?";
+
+        const [posts] = await db.query(sql_post, [member_no]);
+        const [followings] = await db.query(sql_following, [member_no]);
+        const [followers] = await db.query(sql_follower, [member_no]);
+
+        res.json({
+            postCount : posts[0].post_count,
+            followingCount : followings[0].following_count,
+            followerCount : followers[0].follower_count,
+        });
+    } catch (error) {
+        console.error("요약정보 조회 실패", error);
+        res.status(500).json({error : "서버오류"});
+    }
+})
+
 module.exports = router;

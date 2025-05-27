@@ -1,7 +1,8 @@
 import React from "react";
 import { Box, Avatar, Typography, Button } from "@mui/material";
+import FollowToggleBtn from "../FollowToggleBtn";
 
-const FriendCard = ({ user, onUnfollow }) => {
+const FriendCard = ({ currentUserId, friend, setFriends }) => {
   return (
     <Box
       sx={{
@@ -12,32 +13,27 @@ const FriendCard = ({ user, onUnfollow }) => {
         borderBottom: "1px solid #eee",
       }}
     >
-      {/* 왼쪽: 프로필 이미지 + 닉네임 */}
+      {/* 친구 프로필 */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
         <Avatar
-          src={user.profile_img ? `http://localhost:3005/uploads/profile/${user.profile_img}` : ""}
+          src={friend.profile_img ? `http://localhost:3005/uploads/profile/${friend.profile_img}` : ""}
           sx={{ width: 48, height: 48 }}
         />
-        <Typography fontWeight="bold">{user.nickname}</Typography>
+        <Typography fontWeight="bold">{friend.nickname}</Typography>
       </Box>
 
-      {/* 오른쪽: 언팔로우 버튼 */}
-      <Button
-        variant="outlined"
-        size="small"
-        onClick={() => onUnfollow(user.member_no)}
-        sx={{
-          borderColor: "#707C5C",
-          color: "#707C5C",
-          textTransform: "none",
-          fontSize: "0.75rem",
-          borderRadius: "12px",
-          px: 2,
-          py: 0.5,
+      {/* 언팔로우 버튼 */}
+      <FollowToggleBtn
+        currentUserId={currentUserId}
+        targetUserId={friend.member_no}
+        onUnfollow={()=>{
+          setFriends((prev)=>{
+            prev.filter((f) => f.member_no !== friend.member_no);
+          })
         }}
-      >
-        언팔로우
-      </Button>
+        
+        >
+      </FollowToggleBtn>
     </Box>
   );
 };

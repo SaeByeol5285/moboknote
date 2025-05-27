@@ -201,30 +201,34 @@ function FeedDetail() {
                                 </Typography>
                             </Box>
 
-                            {/* 3. 좋아요/아이콘 */}
-                            <Box sx={{ px: 2 }}>
-                                <Divider sx={{ my: 2 }} />
-                                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                                    <Box>
-                                        <IconButton onClick={handleToggleLike}>
-                                            {liked ? (
-                                                <FavoriteIcon sx={{ color: "#e74c3c" }} />
-                                            ) : (
-                                                <FavoriteBorderIcon sx={{ color: "#94B8C4" }} />
-                                            )}
-                                        </IconButton>
+                            {/* 3. 좋아요/메시지/북마크 */}
+                            {feed.member_no !== user.member_no ? (
+                                <Box sx={{ px: 2 }}>
+                                    <Divider sx={{ my: 2 }} />
+                                    <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                                        {/* 왼쪽 아이콘들 */}
+                                        <Box sx={{ display: "flex", gap : 1}}>
+                                            <IconButton onClick={handleToggleLike}>
+                                                {liked ? (
+                                                    <FavoriteIcon sx={{ color: "#e74c3c" }} />
+                                                ) : (
+                                                    <FavoriteBorderIcon sx={{ color: "#94B8C4" }} />
+                                                )}
+                                            </IconButton>
 
-                                        <IconButton><ChatBubbleOutlineIcon sx={{ color: "#94B8C4" }} /></IconButton>
-                                        <IconButton><SendIcon sx={{ color: "#94B8C4" }} /></IconButton>
+                                            <IconButton><ChatBubbleOutlineIcon sx={{ color: "#94B8C4" }} /></IconButton>
+                                            <IconButton><SendIcon sx={{ color: "#94B8C4" }} /></IconButton>
+                                        </Box>
+
+                                        {/* 오른쪽 북마크 */}
+                                        <BookmarkBtn feed_no={feed.feed_no} />
                                     </Box>
 
+                                    <Typography variant="caption" fontWeight="bold" sx={{mt : 0, ml : 0.5}}>
+                                        좋아요 {likeCount}개
+                                    </Typography>
                                 </Box>
-                                <BookmarkBtn feed_no={feed.feed_no} />
-
-                                <Typography variant="caption" fontWeight="bold" mb={1}>
-                                    좋아요 {likeCount}개
-                                </Typography>
-                            </Box>
+                            ) : null}
                         </>
                     )}
 
