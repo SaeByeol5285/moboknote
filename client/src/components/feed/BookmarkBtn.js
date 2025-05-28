@@ -3,7 +3,7 @@ import { IconButton } from "@mui/material";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import { useRecoilValue } from "recoil";
-import { userState } from "../recoil/atoms";
+import { userState } from "../../recoil/atoms";
 
 const BookmarkBtn = ({feed_no}) => {
     const user = useRecoilValue(userState);
@@ -49,6 +49,6 @@ const BookmarkBtn = ({feed_no}) => {
         </>
     )
 
-}
+};
 
 export default BookmarkBtn

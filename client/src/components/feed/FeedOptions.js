@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Menu, MenuItem, IconButton } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { useRecoilValue } from "recoil";
-import { userState } from "../recoil/atoms";
+import { userState } from "../../recoil/atoms";
 import { useNavigate } from "react-router-dom";
 
 function FeedOptions({ feed }) {

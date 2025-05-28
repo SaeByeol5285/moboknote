@@ -1,7 +1,6 @@
 import React from "react";
-import Sidebar from "../components/Sidebar";
-import RightWidgets from "../components/RightWidgets";
-import HeaderFilter from "../components/HeaderFilter";
+import Sidebar from "../components/layout/Sidebar";
+import RightWidgets from "../components/layout/RightWidgets";
 import { Box } from "@mui/material";
 
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import FeedCard from "../components/FeedCard";
+import FeedCard from "../components/feed/FeedCard";
 import { useLocation } from "react-router-dom";
 
 

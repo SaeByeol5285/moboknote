@@ -5,7 +5,7 @@ import { useLocation } from "react-router-dom";
 import {
     Box, Typography, TextField, Button, Select, MenuItem
 } from "@mui/material";
-import KakaoMap from "../components/KakaoMap";
+import KakaoMap from "../components/kakaomap/KakaoMap";
 
 function FeedEdit() {
     const { no } = useParams();

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, IconButton, Typography } from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import KakaoCourseMap from "./KakaoCourseMap";
+import KakaoCourseMap from "../kakaomap/KakaoCourseMap";
 
 
 function FeedDetailImageSlider({ images = [], courseList = [] }) {

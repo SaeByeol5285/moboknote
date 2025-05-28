@@ -6,10 +6,12 @@ import NotificationsNoneRoundedIcon from "@mui/icons-material/NotificationsNoneR
 import AddBoxRoundedIcon from "@mui/icons-material/AddBoxRounded";
 import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
 import { useNavigate } from "react-router-dom";
+import LogoutBtn from "../auth/LogoutBtn";
+
 
 
 function Sidebar() {
-    const navigate = useNavigate(); // ✅ useNavigate 훅 사용
+    const navigate = useNavigate();
 
     return (
         <Box
@@ -68,6 +70,8 @@ function Sidebar() {
                     </ListItemIcon>
                     <ListItemText primary="프로필" />
                 </ListItemButton>
+
+                <LogoutBtn />
             </List>
         </Box>
     );

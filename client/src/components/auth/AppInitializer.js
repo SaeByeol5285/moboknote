@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useSetRecoilState } from "recoil";
-import { userState } from "../recoil/atoms";
+import { userState } from "../../recoil/atoms";
 import { jwtDecode } from "jwt-decode";
 
 function AppInitializer() {

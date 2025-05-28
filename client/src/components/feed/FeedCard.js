@@ -1,0 +1,98 @@
+import React from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import { userState } from "../../recoil/atoms";
+import { Box, Card, CardContent, Typography,} from "@mui/material";
+import FeedHeader from "./FeedHeader";
+import FeedActionButtons from "./FeedActionButtons";
+import BookmarkBtn from "./BookmarkBtn";
+
+function FeedCard({ feed }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const user = useRecoilValue(userState);
+  const currentUserId = user.member_no;
+
+
+  return (
+    <Card
+      onClick={() => navigate(`/feed/${feed.feed_no}`, {
+        state: { backgroundLocation: location },
+      })}
+      sx={{ cursor: "pointer", margin: "14px" }}
+    >
+
+      <CardContent sx={{ display: "flex", alignItems: "center", padding: "14px" }}>
+        <FeedHeader
+          feed={feed}
+          currentUserId={currentUserId}
+          profileImg={user.profile_img}
+        />
+      </CardContent>
+
+
+      {/* 이미지 */}
+      <Box
+        sx={{
+          width: "100%",
+          aspectRatio: "1 / 1", // ✅ 정사각형 유지 
+          backgroundColor: "#000",
+          overflow: "hidden",
+        }}
+      >
+
+        <img
+          src={`http://localhost:3005/${feed.file_path}`}
+          alt="피드 이미지"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover", // ✅ 꽉 채우고 잘라도 됨
+            display: "block",
+          }}
+        />
+      </Box>
+
+      {/* 아이콘 버튼들 */}
+      {feed.member_no !== user.member_no ? (
+        <FeedActionButtons
+          liked={false} // 임시 값 (나중에 상태 연결 가능)
+          likeCount={50} // 더미 값
+          onToggleLike={() => { }} // 클릭 로직 필요 시 연결
+          BookmarkComponent={<BookmarkBtn feed_no={feed.feed_no} />}
+          showSend={true}
+        />
+      ) : (
+        <FeedActionButtons
+          liked={false}
+          likeCount={50}
+          onToggleLike={() => { }}
+          showBookmark={false}
+          showSend={false}
+        />
+      )}
+
+      {/* 본문 + 댓글 */}
+      <CardContent sx={{ pt: 0 }}>
+        {/* 본문 (더보기 포함) */}
+        <Typography variant="body2">
+          <strong>{feed.nickname}</strong>{" "}
+          {feed.content.slice(0, 30)}
+          <span style={{ color: "#888", cursor: "pointer" }}>... 더보기</span>
+        </Typography>
+
+        {/* 댓글 모두 보기 */}
+        <Typography variant="body2" sx={{ color: "#888", mt: 1 }}>
+          댓글 4개 모두 보기
+        </Typography>
+
+        {/* 댓글 달기 */}
+        <Typography variant="body2" sx={{ color: "#888", mt: 0.5 }}>
+          댓글 달기...
+        </Typography>
+      </CardContent>
+    </Card>
+  );
+}
+
+export default FeedCard;

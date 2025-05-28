@@ -8,7 +8,7 @@ import Home from "../pages/Home";
 import MainLayout from "../layouts/MainLayout";
 import FeedDetail from "../pages/FeedDetail";
 import FeedEdit from "../pages/FeedEdit";
-import AppInitializer from "../components/AppInitializer";
+import AppInitializer from "../components/auth/AppInitializer";
 
 
 function AppRouter() {

@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Avatar, Typography, Button } from "@mui/material";
-import FollowToggleBtn from "../FollowToggleBtn";
+import FollowToggleBtn from "./FollowToggleBtn";
 
 const FriendCard = ({ currentUserId, friend, setFriends }) => {
   return (

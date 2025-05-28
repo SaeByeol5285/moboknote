@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Box,
     Button,
@@ -21,6 +21,21 @@ function Login() {
     const [email, setEmail] = useState("");
     const [pwd, setPwd] = useState("");
 
+    //ToDo : 로그아웃 테스트용
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                console.log("✅ 현재 로그인 상태 유지됨:");
+            } catch (error) {
+                console.warn("❌ 토큰 디코딩 실패 또는 만료:", error);
+            }
+        } else {
+            console.log("⚠️ 토큰 없음 (로그아웃 상태)");
+        }
+    }, []);
+
     const handleLogin = () => {
         fetch("http://localhost:3005/user/login", {
             method: "POST",
@@ -34,6 +49,7 @@ function Login() {
                 if (data.success) {
                     localStorage.setItem("token", data.token);
                     const decoded = jwtDecode(data.token);
+                    console.log("✅ 로그인한 사용자 정보:", decoded);
 
                     setUser({
                         isLogin: true,
@@ -135,12 +151,12 @@ function Login() {
                     variant="contained"
                     onClick={handleLogin}
                     sx={{
-                        backgroundColor: "#94b8c4", // 기본 Sky Blue
+                        backgroundColor: "#94b8c4",
                         color: "white",
                         fontWeight: "bold",
                         mb: 1,
                         "&:hover": {
-                            backgroundColor: "#4f7f91", // hover 시 Bike Blue
+                            backgroundColor: "#4f7f91",
                         },
                     }}
                 >
@@ -156,7 +172,6 @@ function Login() {
                         marginBottom: "40px",
                     }}
                 />
-
 
                 <Typography variant="body2" sx={{ mb: 1 }}>
                     비밀번호를 잊으셨나요?

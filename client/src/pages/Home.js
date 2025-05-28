@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { userState } from "../recoil/atoms";
 
-import HeaderFilter from "../components/HeaderFilter";
+import HeaderFilter from "../components/layout/HeaderFilter";
 import FeedList from "./FeedList";
 
 import {

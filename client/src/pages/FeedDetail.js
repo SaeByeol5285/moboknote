@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-
 import { useRecoilValue } from "recoil";
 import { userState } from "../recoil/atoms";
 
@@ -8,24 +7,18 @@ import { userState } from "../recoil/atoms";
 import {
     Box,
     Typography,
-    Divider,
     TextField,
     Button,
     IconButton,
-    Avatar
 } from "@mui/material";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-
 
 // 컴포넌트
-import FeedDetailImageSlider from "../components/FeedDetailImageSlider"; // 이미지 슬라이더
-import KakaoCourseMap from "../components/KakaoCourseMap"; // 코스 지도 컴포넌트
-import FeedOptions from "../components/FeedOptions";
-import BookmarkBtn from "../components/BookmarkBtn";
+import FeedDetailImageSlider from "../components/feed/FeedDetailImageSlider"; // 이미지 슬라이더
+import FeedOptions from "../components/feed/FeedOptions";
+import FeedHeader from "../components/feed/FeedHeader";
+import FeedActionButtons from "../components/feed/FeedActionButtons";
+import BookmarkBtn from "../components/feed/BookmarkBtn";
 
 
 function FeedDetail() {
@@ -172,26 +165,9 @@ function FeedDetail() {
                                         mb: 1,
                                     }}
                                 >
-                                    {/* 왼쪽: 프로필 + 닉네임 */}
-                                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                        <Avatar
-                                            src={
-                                                user.profile_img
-                                                    ? `http://localhost:3005/uploads/profile/${user.profile_img}`
-                                                    : "default.png"
-                                            }
-                                        />
-                                        <Typography fontWeight="bold">{feed.nickname}</Typography>
-                                        <Typography variant="caption" color="text.secondary">
-                                            {new Date(feed.cdatetime).toLocaleDateString()}
-                                        </Typography>
-                                    </Box>
-
-                                    {/* 오른쪽: 더보기 메뉴 */}
+                                    <FeedHeader feed={feed} currentUserId={currentUserId} profileImg={user.profile_img} />
                                     <FeedOptions feed={feed} />
                                 </Box>
-
-                                {/* 2. 본문 */}
                                 <Typography variant="body2" sx={{ mt: 2 }}>
                                     <strong>{feed.nickname}</strong> {feed.title}<br />
                                     {feed.content}
@@ -200,35 +176,14 @@ function FeedDetail() {
                                     #{feed.region} #{feed.season} #{feed.place_type}
                                 </Typography>
                             </Box>
-
-                            {/* 3. 좋아요/메시지/북마크 */}
-                            {feed.member_no !== user.member_no ? (
-                                <Box sx={{ px: 2 }}>
-                                    <Divider sx={{ my: 2 }} />
-                                    <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                                        {/* 왼쪽 아이콘들 */}
-                                        <Box sx={{ display: "flex", gap : 1}}>
-                                            <IconButton onClick={handleToggleLike}>
-                                                {liked ? (
-                                                    <FavoriteIcon sx={{ color: "#e74c3c" }} />
-                                                ) : (
-                                                    <FavoriteBorderIcon sx={{ color: "#94B8C4" }} />
-                                                )}
-                                            </IconButton>
-
-                                            <IconButton><ChatBubbleOutlineIcon sx={{ color: "#94B8C4" }} /></IconButton>
-                                            <IconButton><SendIcon sx={{ color: "#94B8C4" }} /></IconButton>
-                                        </Box>
-
-                                        {/* 오른쪽 북마크 */}
-                                        <BookmarkBtn feed_no={feed.feed_no} />
-                                    </Box>
-
-                                    <Typography variant="caption" fontWeight="bold" sx={{mt : 0, ml : 0.5}}>
-                                        좋아요 {likeCount}개
-                                    </Typography>
-                                </Box>
-                            ) : null}
+                            {feed.member_no !== user.member_no && (
+                                <FeedActionButtons
+                                    liked={liked}
+                                    likeCount={likeCount}
+                                    onToggleLike={handleToggleLike}
+                                    BookmarkComponent={<BookmarkBtn feed_no={feed.feed_no} />}
+                                />
+                            )}
                         </>
                     )}
 
@@ -273,7 +228,7 @@ function FeedDetail() {
                     </Box>
                 </Box>
             </Box>
-        </Box>
+        </Box >
     );
 }
 
