@@ -41,7 +41,10 @@ const BookmarkBtn = ({feed_no}) => {
 
     return (
         <>
-            <IconButton onClick={handleToggleBookmark}>
+            <IconButton onClick={(e) => {
+                e.stopPropagation();
+                handleToggleBookmark();
+            }}>
                 {isBookmarked ? <BookmarkIcon /> : <BookmarkBorderIcon />}
             </IconButton>
         

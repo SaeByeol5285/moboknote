@@ -1,17 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { userState } from "../../recoil/atoms";
-import { Box, Card, CardContent, Typography,} from "@mui/material";
+import { Box, Card, CardContent, Typography, } from "@mui/material";
 import FeedHeader from "./FeedHeader";
 import FeedActionButtons from "./FeedActionButtons";
 import BookmarkBtn from "./BookmarkBtn";
+import LikeBtn from "./LikeBtn";
 
 function FeedCard({ feed }) {
   const navigate = useNavigate();
   const location = useLocation();
   const user = useRecoilValue(userState);
   const currentUserId = user.member_no;
+  const [likeCount, setLikeCount] = useState(0);
+
 
 
   return (
@@ -56,19 +59,17 @@ function FeedCard({ feed }) {
       {/* 아이콘 버튼들 */}
       {feed.member_no !== user.member_no ? (
         <FeedActionButtons
-          liked={false} // 임시 값 (나중에 상태 연결 가능)
-          likeCount={50} // 더미 값
-          onToggleLike={() => { }} // 클릭 로직 필요 시 연결
           BookmarkComponent={<BookmarkBtn feed_no={feed.feed_no} />}
+          LikeComponent={<LikeBtn feed_no={feed.feed_no} onCountChange={delta => setLikeCount(prev => prev + delta)} />}
+          likeCount={likeCount}
           showSend={true}
         />
       ) : (
         <FeedActionButtons
-          liked={false}
-          likeCount={50}
-          onToggleLike={() => { }}
           showBookmark={false}
           showSend={false}
+          LikeComponent={<LikeBtn feed_no={feed.feed_no} onCountChange={delta => setLikeCount(prev => prev + delta)} />}
+          likeCount={likeCount}
         />
       )}
 

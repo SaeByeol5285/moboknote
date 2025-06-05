@@ -223,23 +223,5 @@ router.delete("/:no", async (req, res) => {
 
 })
 
-// 댓글작성
-router.post("/:no/comment", async (req, res) => {
-  const { no } = req.params;
-  const { member_no, content } = req.body;
-
-  try {
-    await db.query(
-      `INSERT INTO comment (feed_no, member_no, content, cdatetime) VALUES (?, ?, ?, NOW())`,
-      [no, member_no, content]
-    );
-    res.json({ success: true });
-  } catch (err) {
-    console.error("❌ 댓글 저장 실패:", err);
-    res.status(500).json({ success: false });
-  }
-});
-
-
 
 module.exports = router;

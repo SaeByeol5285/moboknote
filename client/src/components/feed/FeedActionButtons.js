@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, IconButton, Divider,} from "@mui/material";
+import { Box, Typography, IconButton, Divider, } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
@@ -7,9 +7,8 @@ import SendIcon from "@mui/icons-material/Send";
 
 
 function FeedActionButtons({
-    liked,
     likeCount,
-    onToggleLike,
+    LikeComponent,
     BookmarkComponent = null,
     showSend = true,
 }) {
@@ -18,13 +17,7 @@ function FeedActionButtons({
             <Divider sx={{ my: 2 }} />
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                 <Box sx={{ display: "flex", gap: 1 }}>
-                    <IconButton onClick={onToggleLike}>
-                        {liked ? (
-                            <FavoriteIcon sx={{ color: "#e74c3c" }} />
-                        ) : (
-                            <FavoriteBorderIcon sx={{ color: "#94B8C4" }} />
-                        )}
-                    </IconButton>
+                    {LikeComponent}
 
                     <IconButton>
                         <ChatBubbleOutlineIcon sx={{ color: "#94B8C4" }} />

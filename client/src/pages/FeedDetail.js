@@ -19,7 +19,8 @@ import FeedOptions from "../components/feed/FeedOptions";
 import FeedHeader from "../components/feed/FeedHeader";
 import FeedActionButtons from "../components/feed/FeedActionButtons";
 import BookmarkBtn from "../components/feed/BookmarkBtn";
-
+import LikeBtn from "../components/feed/LikeBtn";
+import CommentList from "../components/comment/CommentList";
 
 function FeedDetail() {
     //페이지 이동
@@ -34,16 +35,15 @@ function FeedDetail() {
     const user = useRecoilValue(userState);
     const currentUserId = user.member_no;
 
-    //피드
     const { no } = useParams();
     const [feed, setFeed] = useState(null);
-    // 댓글 상태
     const [comment, setComment] = useState("");
     const [comments, setComments] = useState([]);
-    // 이미지
     const [images, setImages] = useState([]);
-    // 코스
     const [courseList, setCourseList] = useState([]);
+    const [likeCount, setLikeCount] = useState(0);
+
+
     // esc 누르면 리스트로 이동
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -79,15 +79,14 @@ function FeedDetail() {
         fetch(`/feed/${no}/comment`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ member_no: 1, content: comment.trim() }),
+            body: JSON.stringify({ member_no: currentUserId, content: comment.trim() }),
         })
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
                     setComment("");
-                    // 새로고침 없이 즉시 반영
                     setComments(prev => [...prev, {
-                        member_no: 1,
+                        member_no: currentUserId,
                         content: comment.trim(),
                         cdatetime: new Date().toISOString(),
                     }]);
@@ -95,13 +94,13 @@ function FeedDetail() {
             });
     };
 
-    // 좋아요
-    const [liked, setLiked] = useState(false);
-    const [likeCount, setLikeCount] = useState(50); // 초기 좋아요 수
-    const handleToggleLike = () => {
-        setLiked(!liked);
-        setLikeCount(prev => liked ? prev - 1 : prev + 1);
-    };
+    useEffect(() => {
+        if (!feed || !feed.feed_no) return;
+
+        fetch(`http://localhost:3005/like/count?feed_no=${feed.feed_no}`)
+            .then(res => res.json())
+            .then(data => setLikeCount(data.count));
+    }, [feed]);
 
 
     return (
@@ -155,7 +154,6 @@ function FeedDetail() {
                 <Box sx={{ width: 350, display: "flex", flexDirection: "column", height: "100%" }}>
                     {feed && (
                         <>
-                            {/* 1. 제목 영역 */}
                             <Box sx={{ padding: 2 }}>
                                 <Box
                                     sx={{
@@ -178,54 +176,19 @@ function FeedDetail() {
                             </Box>
                             {feed.member_no !== user.member_no && (
                                 <FeedActionButtons
-                                    liked={liked}
                                     likeCount={likeCount}
-                                    onToggleLike={handleToggleLike}
                                     BookmarkComponent={<BookmarkBtn feed_no={feed.feed_no} />}
+                                    LikeComponent={<LikeBtn feed_no={feed.feed_no} onCountChange={delta => setLikeCount(prev => prev + delta)} />}
                                 />
                             )}
                         </>
                     )}
-
-                    {/* 4. 댓글 리스트 */}
-                    <Box sx={{ flex: 1, px: 2, overflowY: "auto", mb: 1 }}>
-                        {comments.map((c, i) => (
-                            <Box key={i} sx={{ mb: 1 }}>
-                                <Typography variant="body2">
-                                    <strong>{`user_${c.member_no}`}</strong> {c.content}
-                                </Typography>
-                            </Box>
-                        ))}
-                    </Box>
-
-                    {/* 5. 댓글 입력창 */}
-                    <Box sx={{ px: 2, py: 1, borderTop: "1px solid #eee", display: "flex", gap: 1 }}>
-                        <TextField
-                            variant="standard"
-                            placeholder="댓글 달기..."
-                            fullWidth
-                            value={comment}
-                            onChange={(e) => setComment(e.target.value)}
-                            sx={{
-                                "& .MuiInput-underline:after": {
-                                    borderBottomColor: "#94B8C4",
-                                },
-                            }}
+                    {feed &&
+                        <CommentList
+                            feedNo={feed.feed_no}
+                            currentUserId={user.member_no}
                         />
-                        <Button
-                            variant="text"
-                            onClick={handleAddComment}
-                            sx={{
-                                color: "#707C5C",
-                                fontWeight: "bold",
-                                "&:hover": {
-                                    color: "#5e6a4a",
-                                },
-                            }}
-                        >
-                            게시
-                        </Button>
-                    </Box>
+                    }
                 </Box>
             </Box>
         </Box >
