@@ -10,6 +10,7 @@ const followRouter = require('./routes/follow');
 const bookmarkRouter = require('./routes/bookmark');
 const likeRouter = require('./routes/like');
 const commentRouter = require('./routes/comment');
+const notificationRouter = require('./routes/notification');
 
 
 
@@ -20,7 +21,8 @@ app.use("/feed", feedRouter);
 app.use('/follow', followRouter);
 app.use('/bookmark', bookmarkRouter);
 app.use('/like', likeRouter);
-app.use('/comment', commentRouter)
+app.use('/comment', commentRouter);
+app.use('/notification', notificationRouter);
 // 📌 정적 파일 공개 (브라우저에서 접근 가능하게)
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 

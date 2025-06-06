@@ -29,6 +29,8 @@ function AppRouter() {
         <Route path="/feedWrite" element={<MainLayout><FeedWrite /></MainLayout>} />
         <Route path="/profile" element={<MainLayout><Profile /></MainLayout>} />
         <Route path="/feed/edit/:no" element={<MainLayout><FeedEdit /></MainLayout>} />
+        <Route path="/feed/:no" element={<MainLayout><FeedDetail /></MainLayout>} />
+
       </Routes>
 
       {/* 2. 모달 페이지 렌더링 (현재 location 기준) */}

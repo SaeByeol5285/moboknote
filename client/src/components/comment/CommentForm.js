@@ -1,7 +1,7 @@
 import { Box, TextField, Button } from "@mui/material";
 import { useState } from "react";
 
-function CommentForm({ feedNo, memberNo, onAdd }) {
+function CommentForm({ feedNo, memberNo, onAdd, receiverNo }) {
   const [value, setValue] = useState("");
 
   const handleSubmit = () => {
@@ -25,9 +25,21 @@ function CommentForm({ feedNo, memberNo, onAdd }) {
             cdatetime: new Date().toISOString(),
           });
           setValue("");
+          if (receiverNo && receiverNo !== memberNo) {
+            fetch("http://localhost:3005/notification", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                sender_no: memberNo,
+                receiver_no: receiverNo,
+                feed_no: feedNo,
+                type: "comment",
+              }),
+            });
+          }
         }
       });
-  };
+  }
 
   return (
     <Box

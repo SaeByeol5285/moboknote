@@ -5,9 +5,10 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { useRecoilValue } from "recoil";
 import { userState } from "../../recoil/atoms";
 
-function LikeBtn({ feed_no, onCountChange }) {
+function LikeBtn({ feed_no, onCountChange, feed_owner_no }) {
   const user = useRecoilValue(userState);
   const [liked, setLiked] = useState(false);
+
 
   useEffect(() => {
     if (!user.member_no) return;
@@ -28,6 +29,19 @@ function LikeBtn({ feed_no, onCountChange }) {
         if (data.success) {
           setLiked(!liked);
           onCountChange && onCountChange(liked ? -1 : 1);
+
+          if(!liked && feed_owner_no !== user.member_no){
+            fetch(`http://localhost:3005/notification`, {
+              method : "POST", 
+              headers : {"Content-Type" : "application/json"},
+              body : JSON.stringify({
+                sender_no : user.member_no,
+                receiver_no : feed_owner_no, 
+                feed_no : feed_no, 
+                type : "like",
+              })
+            });
+          }
         }
       });
   };

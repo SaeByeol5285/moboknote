@@ -20,7 +20,7 @@ router.post("/:feed_no", async (req, res) => {
 router.get("/:feed_no", async (req, res) => {
   const { feed_no } = req.params;
   try {
-    const sql = "SELECT * FROM comment WHERE feed_no = ? ORDER BY cdatetime ASC";
+    const sql = "SELECT c.*, m.nickname FROM comment c INNER JOIN member m ON c.member_no = m.member_no WHERE c.feed_no = ? ORDER BY c.cdatetime ASC";
     const [rows] = await db.query(sql, [feed_no]);
     res.json({ success: true, comments: rows });
   } catch (error) {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { userState } from "../../recoil/atoms";
@@ -14,6 +14,19 @@ function FeedCard({ feed }) {
   const user = useRecoilValue(userState);
   const currentUserId = user.member_no;
   const [likeCount, setLikeCount] = useState(0);
+  const [comments, setComments] = useState([]);
+  const [isExpanded, setIsExpanded] = useState(false); // 본문 펼침 여부
+
+
+  useEffect(() => {
+    fetch(`http://localhost:3005/comment/${feed.feed_no}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setComments(data.comments);
+        }
+      });
+  }, [feed.feed_no]);
 
 
 
@@ -77,20 +90,57 @@ function FeedCard({ feed }) {
       <CardContent sx={{ pt: 0 }}>
         {/* 본문 (더보기 포함) */}
         <Typography variant="body2">
-          <strong>{feed.nickname}</strong>{" "}
-          {feed.content.slice(0, 30)}
-          <span style={{ color: "#888", cursor: "pointer" }}>... 더보기</span>
+          {(() => {
+            const fullText = `${feed.title} ${feed.content || ""}`.trim(); // 제목 + 본문
+            const preview = isExpanded ? fullText : fullText.slice(0, 30);
+            return (
+              <>
+                <strong>{feed.nickname}</strong>{" "}
+                {isExpanded ? (
+                  fullText
+                ) : (
+                  <>
+                    {preview}
+                    {fullText.length > 30 && (
+                      <span
+                        style={{ color: "#888", cursor: "pointer" }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsExpanded(true);
+                        }}
+                      >
+                        ... 더보기
+                      </span>
+                    )}
+                  </>
+                )}
+              </>
+            );
+          })()}
         </Typography>
 
-        {/* 댓글 모두 보기 */}
-        <Typography variant="body2" sx={{ color: "#888", mt: 1 }}>
-          댓글 4개 모두 보기
-        </Typography>
 
-        {/* 댓글 달기 */}
-        <Typography variant="body2" sx={{ color: "#888", mt: 0.5 }}>
-          댓글 달기...
-        </Typography>
+        {/* 댓글 목록 출력 */}
+        {comments.length > 0 && (
+          <>
+            <Typography variant="body2" sx={{ color: "#888", mt: 1 }}>
+              댓글 {comments.length}개 모두 보기
+            </Typography>
+
+            {/* 최근 댓글 1개만 미리 보여주기 */}
+            <Typography variant="body2">
+              <strong>{comments[comments.length - 1].nickname}</strong>{" "}
+              {comments[comments.length - 1].content}
+            </Typography>
+
+          </>
+        )}
+        {(!comments || comments.length === 0) && (
+          <Typography variant="body2" sx={{ color: "#888", mt: 1 }}>
+            아직 댓글이 없습니다.
+          </Typography>
+        )}
+
       </CardContent>
     </Card>
   );

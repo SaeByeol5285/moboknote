@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Typography, List, ListItemButton, ListItemIcon, ListItemText, Badge } from "@mui/material";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
@@ -7,11 +7,30 @@ import AddBoxRoundedIcon from "@mui/icons-material/AddBoxRounded";
 import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
 import { useNavigate } from "react-router-dom";
 import LogoutBtn from "../auth/LogoutBtn";
+import NotificationDrawer from "../notification/NotificationDrawer";
+import NotificationBadge from "../notification/NotificationBadge";
+import { useRecoilValue } from "recoil";
+import { userState } from "../../recoil/atoms";
+
 
 
 
 function Sidebar() {
     const navigate = useNavigate();
+    const user = useRecoilValue(userState);
+
+    const [notiOpen, setNotiOpen] = useState(false);
+    const [notificationCount, setNotificationCount] = useState(0);
+
+    useEffect(() => {
+        fetch(`http://localhost:3005/notification/unreadCount?member_no=${user.member_no}`)
+            .then(res => res.json())
+            .then(data => {
+                console.log("넘어온 카운트===> ", data.count);
+                setNotificationCount(data.count)
+            });
+    }, []);
+
 
     return (
         <Box
@@ -48,14 +67,23 @@ function Sidebar() {
                     <ListItemText primary="메시지" />
                 </ListItemButton>
 
-                <ListItemButton>
+                <ListItemButton onClick={() => setNotiOpen(true)}>
                     <ListItemIcon>
-                        <Badge badgeContent={5} color="error">
-                            <NotificationsNoneRoundedIcon />
-                        </Badge>
+                        <NotificationBadge
+                            onClick={() => setNotiOpen(true)}
+                            count={notificationCount}
+                        />
                     </ListItemIcon>
                     <ListItemText primary="알림" />
                 </ListItemButton>
+
+
+                <NotificationDrawer 
+                    open={notiOpen} 
+                    onClose={() => setNotiOpen(false)} 
+                    onUpdateCount={(newCount) => setNotificationCount(newCount)}
+
+                />
 
                 <ListItemButton onClick={() => navigate("/feedWrite")}>
                     <ListItemIcon>

@@ -102,6 +102,9 @@ function FeedDetail() {
             .then(data => setLikeCount(data.count));
     }, [feed]);
 
+    console.log("💬 댓글 렌더링용 feed_owner_no:", feed?.member_no);
+
+
 
     return (
         <Box
@@ -178,15 +181,16 @@ function FeedDetail() {
                                 <FeedActionButtons
                                     likeCount={likeCount}
                                     BookmarkComponent={<BookmarkBtn feed_no={feed.feed_no} />}
-                                    LikeComponent={<LikeBtn feed_no={feed.feed_no} onCountChange={delta => setLikeCount(prev => prev + delta)} />}
+                                    LikeComponent={<LikeBtn feed_no={feed.feed_no} feed_owner_no={feed.member_no} onCountChange={delta => setLikeCount(prev => prev + delta)} />}
                                 />
                             )}
                         </>
                     )}
-                    {feed &&
+                    {feed && feed.member_no && currentUserId &&
                         <CommentList
                             feedNo={feed.feed_no}
                             currentUserId={user.member_no}
+                            feed_owner_no={feed.member_no} 
                         />
                     }
                 </Box>
