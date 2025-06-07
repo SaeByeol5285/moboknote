@@ -102,6 +102,55 @@ router.get("/", async (req, res) => {
   }
 });
 
+//검색
+router.get("/search", async (req, res) => {
+  const { region, season, bariType, locationType, ccType, keyword } = req.query;
+
+  let sql = `
+    SELECT F.*, I.file_path as file_path, M.nickname, M.profile_img 
+    FROM feed F 
+    LEFT JOIN feed_img I ON F.feed_no = I.feed_no AND I.is_thumbnail = 'Y'
+    INNER JOIN member M ON F.member_no = M.member_no
+    WHERE 1 = 1
+  `;
+
+  const params = [];
+  if (region) {
+    sql += ` AND F.region = ?`;
+    params.push(region);
+  }
+  if (season) {
+    sql += ` AND F.season = ?`;
+    params.push(season);
+  }
+  if (bariType) {
+    sql += ` AND F.bari_type = ?`;
+    params.push(bariType);
+  }
+  if (locationType) {
+    sql += ` AND F.place_type = ?`;
+    params.push(locationType);
+  }
+  if (ccType) {
+    sql += ` AND F.bike_cc = ?`;
+    params.push(ccType);
+  }
+  if (keyword) {
+    sql += ` AND (F.title LIKE ? OR F.content LIKE ?)`;
+    params.push(`%${keyword}%`, `%${keyword}%`);
+  }
+
+  sql += ` ORDER BY F.feed_no DESC`;
+
+  try {
+    const [rows] = await db.query(sql, params);
+    res.json({ success: true, feeds: rows });
+  } catch (err) {
+    console.error("필터 검색 오류:", err);
+    res.status(500).json({ success: false });
+  }
+});
+
 //상세보기
 router.get("/:no", async (req, res) => {
   const { no } = req.params;
@@ -221,7 +270,7 @@ router.delete("/:no", async (req, res) => {
     res.status(500).json({ success: false });
   }
 
-})
+});
 
 
 module.exports = router;

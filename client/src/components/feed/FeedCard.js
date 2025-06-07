@@ -76,6 +76,7 @@ function FeedCard({ feed }) {
           LikeComponent={<LikeBtn feed_no={feed.feed_no} onCountChange={delta => setLikeCount(prev => prev + delta)} />}
           likeCount={likeCount}
           showSend={true}
+          feedOwnerNo={feed.member_no}
         />
       ) : (
         <FeedActionButtons
@@ -83,6 +84,8 @@ function FeedCard({ feed }) {
           showSend={false}
           LikeComponent={<LikeBtn feed_no={feed.feed_no} onCountChange={delta => setLikeCount(prev => prev + delta)} />}
           likeCount={likeCount}
+          feedOwnerNo={feed.member_no}
+
         />
       )}
 

@@ -9,6 +9,7 @@ import MainLayout from "../layouts/MainLayout";
 import FeedDetail from "../pages/FeedDetail";
 import FeedEdit from "../pages/FeedEdit";
 import AppInitializer from "../components/auth/AppInitializer";
+import Chat from "../pages/Chat";
 
 
 function AppRouter() {
@@ -30,6 +31,8 @@ function AppRouter() {
         <Route path="/profile" element={<MainLayout><Profile /></MainLayout>} />
         <Route path="/feed/edit/:no" element={<MainLayout><FeedEdit /></MainLayout>} />
         <Route path="/feed/:no" element={<MainLayout><FeedDetail /></MainLayout>} />
+        <Route path="/chat" element={<MainLayout><Chat /></MainLayout>} />
+
 
       </Routes>
 

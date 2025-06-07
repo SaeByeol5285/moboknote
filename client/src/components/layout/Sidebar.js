@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography, List, ListItemButton, ListItemIcon, ListItemText, Badge } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import { userState } from "../../recoil/atoms";
+
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
-import NotificationsNoneRoundedIcon from "@mui/icons-material/NotificationsNoneRounded";
 import AddBoxRoundedIcon from "@mui/icons-material/AddBoxRounded";
 import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
-import { useNavigate } from "react-router-dom";
+
 import LogoutBtn from "../auth/LogoutBtn";
 import NotificationDrawer from "../notification/NotificationDrawer";
 import NotificationBadge from "../notification/NotificationBadge";
-import { useRecoilValue } from "recoil";
-import { userState } from "../../recoil/atoms";
 
 
 
@@ -26,7 +27,6 @@ function Sidebar() {
         fetch(`http://localhost:3005/notification/unreadCount?member_no=${user.member_no}`)
             .then(res => res.json())
             .then(data => {
-                console.log("넘어온 카운트===> ", data.count);
                 setNotificationCount(data.count)
             });
     }, []);
@@ -60,7 +60,7 @@ function Sidebar() {
                     <ListItemText primary="홈" />
                 </ListItemButton>
 
-                <ListItemButton>
+                <ListItemButton onClick={() => navigate("/chat")}>
                     <ListItemIcon>
                         <SendRoundedIcon />
                     </ListItemIcon>

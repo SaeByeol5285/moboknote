@@ -11,6 +11,7 @@ const bookmarkRouter = require('./routes/bookmark');
 const likeRouter = require('./routes/like');
 const commentRouter = require('./routes/comment');
 const notificationRouter = require('./routes/notification');
+const chatRouter = require('./routes/chat');
 
 
 
@@ -23,7 +24,7 @@ app.use('/bookmark', bookmarkRouter);
 app.use('/like', likeRouter);
 app.use('/comment', commentRouter);
 app.use('/notification', notificationRouter);
-// 📌 정적 파일 공개 (브라우저에서 접근 가능하게)
+app.use('/chat', chatRouter);
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     Box,
     Select,
@@ -9,24 +9,49 @@ import {
     InputLabel,
 } from "@mui/material";
 
-function HeaderFilter() {
+function HeaderFilter({ setFilters }) {
+    const [region, setRegion] = useState("");
+    const [season, setSeason] = useState("");
+    const [bariType, setBariType] = useState("");
+    const [locationType, setLocationType] = useState("");
+    const [ccType, setCcType] = useState("");
+    const [keyword, setKeyword] = useState("");
+
+    const handleSearch = () => {
+        setFilters({
+            region,
+            season,
+            bariType,
+            locationType,
+            ccType,
+            keyword,
+        });
+
+        setRegion("");
+        setSeason("");
+        setBariType("");
+        setLocationType("");
+        setCcType("");
+        setKeyword("");
+    };
+
     return (
         <Box
             sx={{
                 padding: "20px 0",
                 display: "flex",
                 gap: 2,
-                flexWrap: "nowrap", // ✅ 유지 가능
+                flexWrap: "nowrap",
                 justifyContent: "center",
                 alignItems: "center",
-                overflowX: "auto",   // ✅ 혹시라도 넘치면 스크롤 허용
+                overflowX: "auto",
             }}
         >
 
             {/* 지역 */}
             <FormControl size="small" sx={{ minWidth: 160 }} color="success">
                 <InputLabel id="region-label">지역</InputLabel>
-                <Select labelId="region-label" defaultValue="" label="지역">
+                <Select labelId="region-label" value={region} onChange={(e) => setRegion(e.target.value)} label="지역">
                     <MenuItem value="">전체</MenuItem>
                     <MenuItem value="seoul">서울특별시</MenuItem>
                     <MenuItem value="busan">부산광역시</MenuItem>
@@ -50,7 +75,7 @@ function HeaderFilter() {
             {/* 계절 */}
             <FormControl size="small" sx={{ minWidth: 100 }} color="success">
                 <InputLabel id="season-label">계절</InputLabel>
-                <Select labelId="season-label" defaultValue="" label="계절">
+                <Select labelId="season-label" value={season} onChange={(e) => setSeason(e.target.value)} label="계절">
                     <MenuItem value="">전체</MenuItem>
                     <MenuItem value="spring">봄</MenuItem>
                     <MenuItem value="summer">여름</MenuItem>
@@ -62,7 +87,7 @@ function HeaderFilter() {
             {/* 바리 종류 */}
             <FormControl size="small" sx={{ minWidth: 120 }} color="success">
                 <InputLabel id="bari-label">바리</InputLabel>
-                <Select labelId="bari-label" defaultValue="" label="바리">
+                <Select labelId="bari-label" value={bariType} onChange={(e) => setBariType(e.target.value)} label="바리">
                     <MenuItem value="">전체</MenuItem>
                     <MenuItem value="night">밤바리</MenuItem>
                     <MenuItem value="oneday">당일바리</MenuItem>
@@ -74,7 +99,7 @@ function HeaderFilter() {
             {/* 장소 유형 */}
             <FormControl size="small" sx={{ minWidth: 120 }} color="success">
                 <InputLabel id="location-label">장소</InputLabel>
-                <Select labelId="location-label" defaultValue="" label="장소">
+                <Select labelId="location-label" value={locationType} onChange={(e) => setLocationType(e.target.value)} label="장소">
                     <MenuItem value="">전체</MenuItem>
                     <MenuItem value="mountain">산/숲</MenuItem>
                     <MenuItem value="coastal">해안도로</MenuItem>
@@ -88,7 +113,7 @@ function HeaderFilter() {
             {/* 바이크 cc */}
             <FormControl size="small" sx={{ minWidth: 140 }} color="success">
                 <InputLabel id="cc-label">바이크 cc</InputLabel>
-                <Select labelId="cc-label" defaultValue="" label="바이크 cc">
+                <Select labelId="cc-label" value={ccType} onChange={(e) => setCcType(e.target.value)} label="바이크 cc">
                     <MenuItem value="">전체</MenuItem>
                     <MenuItem value="125">125cc</MenuItem>
                     <MenuItem value="quarter">쿼터급 (125~400cc)</MenuItem>
@@ -99,9 +124,15 @@ function HeaderFilter() {
 
 
             {/* 검색창 */}
-            <TextField size="small" placeholder="검색어 입력" sx={{ width: 250 }} />
+            <TextField
+                size="small"
+                placeholder="검색어 입력"
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                sx={{ width: 250 }}
+            />
 
-            <Button variant="contained" sx={{ backgroundColor: "#707C5C" }}>
+            <Button variant="contained" sx={{ backgroundColor: "#707C5C" }} onClick={handleSearch}>
                 검색
             </Button>
         </Box>

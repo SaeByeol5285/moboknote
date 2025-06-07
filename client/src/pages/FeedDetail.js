@@ -63,7 +63,6 @@ function FeedDetail() {
         fetch(`http://localhost:3005/feed/${no}`)
             .then(res => res.json())
             .then(data => {
-                console.log("course ===>", data.course)
                 if (data.success) {
                     setFeed(data.info);        // 피드 본문
                     setImages(data.images);    // 이미지 배열
@@ -101,8 +100,6 @@ function FeedDetail() {
             .then(res => res.json())
             .then(data => setLikeCount(data.count));
     }, [feed]);
-
-    console.log("💬 댓글 렌더링용 feed_owner_no:", feed?.member_no);
 
 
 
@@ -182,6 +179,8 @@ function FeedDetail() {
                                     likeCount={likeCount}
                                     BookmarkComponent={<BookmarkBtn feed_no={feed.feed_no} />}
                                     LikeComponent={<LikeBtn feed_no={feed.feed_no} feed_owner_no={feed.member_no} onCountChange={delta => setLikeCount(prev => prev + delta)} />}
+                                    feedOwnerNo={feed.member_no}
+
                                 />
                             )}
                         </>
@@ -190,7 +189,7 @@ function FeedDetail() {
                         <CommentList
                             feedNo={feed.feed_no}
                             currentUserId={user.member_no}
-                            feed_owner_no={feed.member_no} 
+                            feed_owner_no={feed.member_no}
                         />
                     }
                 </Box>

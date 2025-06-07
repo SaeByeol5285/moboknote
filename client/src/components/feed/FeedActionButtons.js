@@ -4,6 +4,9 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import SendIcon from "@mui/icons-material/Send";
+import { useRecoilValue } from "recoil";
+import { userState } from "../../recoil/atoms";
+import { useNavigate } from "react-router-dom";
 
 
 function FeedActionButtons({
@@ -11,7 +14,28 @@ function FeedActionButtons({
     LikeComponent,
     BookmarkComponent = null,
     showSend = true,
+    feedOwnerNo,
 }) {
+    const user = useRecoilValue(userState);
+    const navigate = useNavigate();
+
+    const handleStartChat = () => {
+        fetch("http://localhost:3005/chat/room", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                member1_no: user.member_no,
+                member2_no: feedOwnerNo,
+            }),
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    navigate("/chat");
+                }
+            });
+    };
+
     return (
         <Box sx={{ px: 2 }}>
             <Divider sx={{ my: 2 }} />
@@ -24,7 +48,7 @@ function FeedActionButtons({
                     </IconButton>
 
                     {showSend && (
-                        <IconButton>
+                        <IconButton onClick={handleStartChat}>
                             <SendIcon sx={{ color: "#94B8C4" }} />
                         </IconButton>
                     )}

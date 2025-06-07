@@ -36,7 +36,7 @@ function CommentList({ feedNo, currentUserId, feed_owner_no }) {
         <Box sx={{ flex: 1, px: 2, overflowY: "auto", mb: 1 }}>
           {comments.map(c => (
             <CommentItem
-              key={c.commentNo}
+              key={c.comment_no}
               comment={c}
               feedNo={feedNo}
               currentUserId={currentUserId}

@@ -1,5 +1,5 @@
 import React from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { userState } from "../recoil/atoms";
@@ -7,25 +7,25 @@ import { userState } from "../recoil/atoms";
 import HeaderFilter from "../components/layout/HeaderFilter";
 import FeedList from "./FeedList";
 
-import {
-  Box,
-
-} from "@mui/material";
+import { Box, } from "@mui/material";
 
 function Home() {
   const navigate = useNavigate();
-  const user = useRecoilValue(userState);
-  const currentUserId = user.member_no;
 
+  const [filters, setFilters] = useState({
+    region: "",
+    season: "",
+    bariType: "",
+    locationType: "",
+    ccType: "",
+    keyword: "",
+  });
 
   useEffect(() => {
-    // localStorage에서 token꺼내서 로그인 정보 있는지 확인
     const token = localStorage.getItem("token");
     if (!token) {
       alert("로그인 후 사용해주세요.");
       navigate("/login");
-    } else {
-      console.log("로그인 ===> ", currentUserId)
     }
   }, []);
 
@@ -34,14 +34,14 @@ function Home() {
       {/* 필터 */}
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         <Box sx={{ width: "100%", maxWidth: "1200px", px: 2 }}>
-          <HeaderFilter />
+          <HeaderFilter filters={filters} setFilters={setFilters} />
         </Box>
       </Box>
 
       {/* 피드 */}
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         <Box sx={{ width: "100%", maxWidth: "600px", px: 2 }}>
-          <FeedList />
+          <FeedList filters={filters} />
         </Box>
       </Box>
     </>
